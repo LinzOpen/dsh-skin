@@ -9,14 +9,14 @@ Three integration paths, in order of how much control you have over the host.
 ## 1 · You own the Electron app · 你自己的 Electron 应用
 
 ```bash
-npm install @dsh-skin/host
+npm install @css-guard/electron
 ```
 
 ```js
 // main.js
 const path = require("node:path");
 const { app, BrowserWindow } = require("electron");
-const { registerSkinScheme, createSkinHost } = require("@dsh-skin/host");
+const { registerSkinScheme, createSkinHost } = require("@css-guard/electron");
 
 // 必须在 app ready 之前。晚一步不会报错，只会所有素材 404 —— 这个 bug 很难查。
 registerSkinScheme();
@@ -75,7 +75,7 @@ That is the entire contract. See the vocabulary list in [skin-format.md](skin-fo
 
 ## 2 · DSH (DeepSeek Harness) · 适配器
 
-`adapters/dsh-plugin` serves a `dsh-skin` library to a DSH renderer.
+`adapters/dsh` serves a `css-guard` library to a DSH renderer.
 
 DSH's plugin route serves exactly one file per plugin (`/plugins/<pkg>/client.js`); every other path
 under a mounted plugin returns 404, and the renderer refuses `file://`. So the browser half can only
@@ -92,7 +92,7 @@ GET /css/<id>          可注入的 CSS，__SKIN__ 已替换；带 error 的皮�
 GET /skin/<id>/<path>  素材，长缓存
 ```
 
-> **Verification status.** The asset server has automated tests (`adapters/dsh-plugin/test/`) —
+> **Verification status.** The asset server has automated tests (`adapters/dsh/test/`) —
 > catalogue, CSS compilation, the 409 refusal, path-traversal guards, method allowlist. **Mounting it
 > into a live DSH has not been verified.** Treat the client half as unverified until you have run it
 > against your own DSH.
@@ -104,7 +104,7 @@ GET /skin/<id>/<path>  素材，长缓存
 
 ## 3 · An app you don't control · 你控制不了的应用
 
-Use shell mode: open `dsh-skin`, go to **外壳 / Shell**, type the URL. The skin is injected into that
+Use shell mode: open `css-guard`, go to **外壳 / Shell**, type the URL. The skin is injected into that
 window with `insertCSS`. Only CSS — never scripts.
 
 This works for anything that is a web UI you can reach by URL. It does not work for a native app, and

@@ -1,14 +1,14 @@
 "use strict";
 /**
- * dshskin:// —— App 自己的取图协议。
+ * cssguard:// —— App 自己的取图协议。
  *
  * 为什么不用 file://：渲染进程对 file:// 有一堆限制（远程页面里根本加载不到），
  * 而外壳模式恰恰要把本地素材铺进一个 http(s) 页面。为什么不起一个本地 http 服务：
  * 那是一个会被同机任何进程访问到的端口，为了几张背景图开一个监听不值得。
  *
  * 两条路由：
- *   dshskin://app/<file>        渲染进程自己的页面（工作室 + 预览沙盒）
- *   dshskin://skin/<id>/<path>  某套皮肤的素材
+ *   cssguard://app/<file>        渲染进程自己的页面（工作室 + 预览沙盒）
+ *   cssguard://skin/<id>/<path>  某套皮肤的素材
  *
  * 安全：皮肤素材只在"这套皮肤自己的目录"里找，且解析后的真实路径必须仍在目录内。
  * 不做这一步，一个 url("__SKIN__/../../../.ssh/id_ed25519") 就能把私钥读成背景图。
@@ -19,7 +19,7 @@ const { pathToFileURL } = require("node:url");
 const { protocol, net } = require("electron");
 const skins = require("./skins");
 
-const SCHEME = "dshskin";
+const SCHEME = "cssguard";
 const RENDERER = path.join(__dirname, "..", "renderer");
 
 /** 必须在 app ready 之前调用。 */

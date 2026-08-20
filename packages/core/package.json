@@ -1,15 +1,38 @@
 {
-  "name": "@dsh-skin/core",
+  "name": "css-guard",
   "version": "0.1.0",
-  "description": "Skin manifest parsing, security linting and library scanning. No Electron, no DOM, no dependencies.",
+  "description": "Refuse stylesheets that can steal what your users type. A linter and safe-injection engine for user-supplied CSS.",
   "license": "MIT",
   "main": "src/index.js",
   "exports": {
-    ".": "./src/index.js",
+    ".": {
+      "browser": "./src/browser.js",
+      "default": "./src/index.js"
+    },
+    "./browser": "./src/browser.js",
     "./schema": "./schema/skin.schema.json",
     "./package.json": "./package.json"
   },
-  "files": ["src", "schema", "README.md"],
-  "keywords": ["skin", "theme", "electron", "css", "lint"],
-  "engines": { "node": ">=20" }
+  "files": [
+    "src",
+    "schema",
+    "README.md"
+  ],
+  "keywords": [
+    "css",
+    "security",
+    "linter",
+    "sanitize",
+    "user-css",
+    "userstyle",
+    "theme",
+    "exfiltration",
+    "electron",
+    "css-injection",
+    "attribute-selector"
+  ],
+  "engines": {
+    "node": ">=20"
+  },
+  "browser": "./src/browser.js"
 }

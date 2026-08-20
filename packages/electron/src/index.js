@@ -1,9 +1,9 @@
 "use strict";
 /**
- * @dsh-skin/host —— 让一个 Electron 窗口能换皮肤。
+ * @css-guard/electron —— 让一个 Electron 窗口能换皮肤。
  *
  *   // main.js，app ready 之前
- *   const { registerSkinScheme, createSkinHost } = require("@dsh-skin/host");
+ *   const { registerSkinScheme, createSkinHost } = require("@css-guard/electron");
  *   registerSkinScheme();
  *
  *   // ready 之后
@@ -19,15 +19,15 @@
  *   2. 切换必须串行。并发切换会让上一套皮肤的 CSS 永久留在页面里 ——
  *      实测表现是"亮色拿到了新配色却还铺着旧背景"。
  *   3. 注入前必须过检查器。皮肤是别人写的、会进你用户界面的代码，
- *      而纯 CSS 也能外泄输入内容（见 @dsh-skin/core 的 remote-url 规则）。
+ *      而纯 CSS 也能外泄输入内容（见 css-guard 的 remote-url 规则）。
  */
 
 const fs = require("node:fs");
 const path = require("node:path");
 const { pathToFileURL } = require("node:url");
-const core = require("@dsh-skin/core");
+const core = require("css-guard");
 
-const DEFAULT_SCHEME = "dshskin";
+const DEFAULT_SCHEME = "cssguard";
 
 /** 必须在 app ready 之前调用。 */
 function registerSkinScheme(scheme = DEFAULT_SCHEME) {
@@ -53,7 +53,7 @@ function inside(root, target) {
 /**
  * @param {object} options
  * @param {string[]} options.roots      皮肤根目录，后面的覆盖前面的同 id
- * @param {string} [options.scheme]     自定义协议名，默认 dshskin
+ * @param {string} [options.scheme]     自定义协议名，默认 cssguard
  * @param {boolean} [options.enforce]   true（默认）= 有 error 的皮肤拒绝注入
  */
 function createSkinHost(options) {
@@ -101,7 +101,7 @@ function createSkinHost(options) {
     }
     let css = core.resolveCss(raw, assetBase(id));
     if (skin.backdrops.length) {
-      css += `\n:root { --dsh-backdrop: url("${assetBase(id)}/${skin.backdrops[0]}"); }\n`;
+      css += `\n:root { --skin-backdrop: url("${assetBase(id)}/${skin.backdrops[0]}"); }\n`;
     }
     return { css, report, skin, error: "" };
   }
@@ -129,14 +129,14 @@ function createSkinHost(options) {
 
   async function applyNow(win, id) {
     const wc = win.webContents;
-    if (wc.__dshSkinKey) {
-      try { await wc.removeInsertedCSS(wc.__dshSkinKey); } catch { /* 页面可能已跳走 */ }
-      wc.__dshSkinKey = null;
+    if (wc.__cssGuardKey) {
+      try { await wc.removeInsertedCSS(wc.__cssGuardKey); } catch { /* 页面可能已跳走 */ }
+      wc.__cssGuardKey = null;
     }
     if (!id || id === "none") return { ok: true, skin: "none" };
     const { css, error, report } = compile(id);
     if (!css) return { ok: false, skin: id, error };
-    wc.__dshSkinKey = await wc.insertCSS(css);
+    wc.__cssGuardKey = await wc.insertCSS(css);
     return { ok: true, skin: id, warnings: report ? report.warnings : 0 };
   }
 

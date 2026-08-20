@@ -9,8 +9,10 @@
  * 混成一级会有两个后果：要么真危险的被当噪音点掉，要么合法皮肤被误杀。
  */
 
-const fs = require("node:fs");
-const path = require("node:path");
+/* fs / path 刻意**不在这里 require**，只在需要核对素材是否存在时按需取。
+   这样 validate.js 在浏览器、Worker、Deno、浏览器扩展里都能直接跑 ——
+   而"检查一段 CSS 安不安全"这件事，最该发生的地方恰恰就是这些环境：
+   在把用户的样式表注入页面之前，当场判断。绑死 node:fs 等于把它们全挡在门外。 */
 const {
   SECURITY_RULES, QUALITY_RULES, REQUIRED_VARIABLES,
   CLASS_TOKEN, looksHashedClass,
@@ -122,6 +124,9 @@ function validateCss(css, options = {}) {
 
   // 素材存在性：只有拿到目录才能查，查不了就不报（CLI 传目录，实时预览不传）。
   if (dir) {
+    // 按需 require：不给 dir 就永远不会走到这里，也就不会碰 node 内置模块。
+    const fs = require("node:fs");
+    const path = require("node:path");
     const seen = new Set();
     for (const { ref, index } of referencedAssets(scan)) {
       const clean = ref.split("?")[0].split("#")[0];

@@ -82,10 +82,11 @@ input { font: inherit; color: inherit; }
 
 /* ── 皮肤列表 ─────────────────────────────────────────────────────── */
 .skin {
-  display: grid; grid-template-columns: 56px 1fr; gap: 10px; align-items: center;
+  display: grid; grid-template-columns: 56px 1fr auto; gap: 10px; align-items: center;
   padding: 9px 12px; border: 0; width: 100%; text-align: left; background: transparent;
   border-bottom: 1px solid var(--ui-line);
 }
+.skin .skin-main { min-width: 0; }
 .skin:hover { background: var(--ui-sunken); }
 .skin[aria-current="true"] { background: color-mix(in srgb, var(--ui-accent) 14%, transparent); }
 .skin .swatch {
@@ -219,3 +220,24 @@ input { font: inherit; color: inherit; }
                      background: var(--ui-sunken); color: var(--ui-text);
                      font: 12px/1.7 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; }
 .terminal-help code { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; }
+
+/* ── 皮肤库筛选条 ─────────────────────────────────────────────────── */
+.filters { display: flex; gap: 8px; padding: 8px 10px; border-bottom: 1px solid var(--ui-line); }
+.filters input[type=search] {
+  flex: 1; min-width: 0; padding: 6px 10px; border-radius: 8px; font: inherit;
+  background: var(--ui-sunken); border: 1px solid var(--ui-line); color: var(--ui-text);
+}
+.filters input[type=search]:focus { outline: 2px solid color-mix(in srgb, var(--ui-accent) 55%, transparent); outline-offset: -1px; }
+.filters select {
+  padding: 6px 8px; border-radius: 8px; font: inherit; max-width: 40%;
+  background: var(--ui-sunken); border: 1px solid var(--ui-line); color: var(--ui-text);
+}
+.skin .hover-acts { display: flex; gap: 4px; margin-left: auto; opacity: 0; transition: opacity .12s; }
+.skin:hover .hover-acts, .skin:focus-within .hover-acts { opacity: 1; }
+.skin .hover-acts button {
+  padding: 2px 8px; font-size: 11px; border-radius: 6px; border: 1px solid var(--ui-line);
+  background: var(--ui-panel); color: var(--ui-dim); cursor: default;
+}
+.skin .hover-acts button:hover { color: var(--ui-text); border-color: var(--ui-accent); }
+.skin .hover-acts button.danger:hover { color: var(--ui-error); border-color: var(--ui-error); }
+.empty-filtered { padding: 24px 14px; text-align: center; color: var(--ui-faint); font-size: 13px; }

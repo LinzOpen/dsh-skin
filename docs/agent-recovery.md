@@ -29,8 +29,8 @@ No terminal knowledge, no colleague to ask, and the thing that used to answer qu
 
 还是不行的话，打开这个文件夹 —— 里面的文件**双击就行，不需要输入任何东西**：
 
-- **Mac**：访达 → 菜单栏「前往」→「前往文件夹」→ 粘贴 `~/.dsh-skin/急救`
-- **Windows**：文件资源管理器地址栏粘贴 `%USERPROFILE%\.dsh-skin\急救`
+- **Mac**：访达 → 菜单栏「前往」→「前往文件夹」→ 粘贴 `~/.css-guard/急救`
+- **Windows**：文件资源管理器地址栏粘贴 `%USERPROFILE%\.css-guard\急救`
 
 ```
 1 看看出了什么问题      先点这个。只看，不改。
@@ -47,15 +47,15 @@ No terminal knowledge, no colleague to ask, and the thing that used to answer qu
 <summary>会用终端的话（可选，效果一样）</summary>
 
 ```bash
-npx @dsh-skin/cli doctor
+npx @css-guard/cli doctor
 ```
 
 它会列出现在什么状况，每一条后面跟着该跑哪条命令。三条最常用的：
 
 ```bash
-npx @dsh-skin/cli undo             # 看一眼「退回上一个还原点」会改什么（只是预演，不动手）
-npx @dsh-skin/cli undo --yes       # 真的退回去
-npx @dsh-skin/cli safe-mode on     # 下次启动不套任何皮肤
+npx @css-guard/cli undo             # 看一眼「退回上一个还原点」会改什么（只是预演，不动手）
+npx @css-guard/cli undo --yes       # 真的退回去
+npx @css-guard/cli safe-mode on     # 下次启动不套任何皮肤
 ```
 
 </details>
@@ -64,12 +64,12 @@ npx @dsh-skin/cli safe-mode on     # 下次启动不套任何皮肤
 
 把下面这段整个复制给它 —— 任何一个能跑命令的 AI 助手都能照着做：
 
-> 我在用一个叫 dsh-skin 的皮肤软件，出问题了。请你：
-> 1. 跑 `npx @dsh-skin/cli doctor --json`，读它的输出。
+> 我在用一个叫 css-guard 的皮肤软件，出问题了。请你：
+> 1. 跑 `npx @css-guard/cli doctor --json`，读它的输出。
 > 2. 每一条 `level` 不是 `ok` 的结论里都带着 `fix.command`，告诉我它们分别是什么意思。
-> 3. 如果需要回退，先跑 `npx @dsh-skin/cli undo`（这只是预演），把它要改什么念给我听，
+> 3. 如果需要回退，先跑 `npx @css-guard/cli undo`（这只是预演），把它要改什么念给我听，
 >    我同意之后你再加 `--yes` 执行。
-> 4. 不要删除 `~/.dsh-skin` 下的任何文件，也不要删任何皮肤目录。恢复不需要删东西。
+> 4. 不要删除 `~/.css-guard` 下的任何文件，也不要删任何皮肤目录。恢复不需要删东西。
 
 ---
 
@@ -78,7 +78,7 @@ npx @dsh-skin/cli safe-mode on     # 下次启动不套任何皮肤
 ### 现场都在这一个目录里
 
 ```
-~/.dsh-skin/
+~/.css-guard/
 ├── skins/          用户自己的皮肤（内置皮肤在程序包里，不在这）
 ├── state.json      设置。字段有取值范围，越界会被自动收拢
 ├── history/        还原点，每次改动前自动存，最多 30 个
@@ -89,7 +89,7 @@ npx @dsh-skin/cli safe-mode on     # 下次启动不套任何皮肤
 └── boot.lock       启动断路器的标记；界面出来就删掉
 ```
 
-`DSH_SKIN_HOME` 可以改这个位置（测试时务必用它，别动用户真实的目录）。
+`CSS_GUARD_HOME` 可以改这个位置（测试时务必用它，别动用户真实的目录）。
 
 ### 四条硬规矩
 
@@ -107,7 +107,7 @@ npx @dsh-skin/cli safe-mode on     # 下次启动不套任何皮肤
 **4 · 你自己也会崩。** 所以在做任何有风险的事之前，显式存一个带说明的还原点：
 
 ```bash
-npx @dsh-skin/cli snapshot -m "改配色之前"
+npx @css-guard/cli snapshot -m "改配色之前"
 ```
 
 程序自己在套用皮肤、新建、导入、删除之前会自动存；但你在**命令行里**直接改文件时不会 ——
@@ -138,7 +138,7 @@ npx @dsh-skin/cli snapshot -m "改配色之前"
     { "id": "current-skin", "level": "error",
       "title": "选中的皮肤 xxx 不存在",
       "detail": "程序会显示成没有皮肤。…",
-      "fix": { "command": "dsh-skin undo", "description": "回到删掉它之前的那个还原点。" } }
+      "fix": { "command": "css-guard undo", "description": "回到删掉它之前的那个还原点。" } }
   ],
   "summary": { "root": "…", "safeMode": false, "skins": 7, "brokenSkins": 0,
                "blockedSkins": 1, "currentSkin": "xxx", "restorePoints": 12 }
@@ -163,7 +163,7 @@ npx @dsh-skin/cli snapshot -m "改配色之前"
 
 - **不要直接编辑 `state.json` 之后不跑校验。** 字段有取值范围；写一个 `rotateMinutes: 0`
   进去会让轮播每分钟触发一次。用 `doctor --fix` 或让程序自己写。
-- **不要用「删掉重装」当修复手段。** 这个软件的用户数据就在 `~/.dsh-skin` 里，删掉等于
+- **不要用「删掉重装」当修复手段。** 这个软件的用户数据就在 `~/.css-guard` 里，删掉等于
   把他自己做的皮肤一起删了，而那是还原点也救不回来的部分（素材图不进快照）。
 - **不要在没有还原点的情况下开始改。** `doctor` 会告诉你有几个；一个都没有就先 `snapshot`。
 - **不要替用户决定「要不要回退」。** 预演给他看，他说了算。

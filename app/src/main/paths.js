@@ -1,13 +1,13 @@
 "use strict";
 /**
- * 目录。用户目录那部分全部委托给 @dsh-skin/core 的 home ——
- * 命令行的 `dsh-skin doctor` 读的是同一份实现。两份实现必然漂移，
+ * 目录。用户目录那部分全部委托给 css-guard 的 home ——
+ * 命令行的 `css-guard doctor` 读的是同一份实现。两份实现必然漂移，
  * 而漂移的后果是体检报出来的现状不是程序真正用的那一份，
  * 那时候 agent 拿着诊断去修，会越修越远。
  */
 const fs = require("node:fs");
 const path = require("node:path");
-const { home } = require("@dsh-skin/core");
+const { home } = require("css-guard");
 
 const REPO_SKINS = path.join(__dirname, "..", "..", "..", "skins");
 // process.resourcesPath 只有在 Electron 里才有。空字符串 join 出来是相对路径 "skins"，

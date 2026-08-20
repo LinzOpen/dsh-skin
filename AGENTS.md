@@ -29,12 +29,12 @@ adapters/       DSH 插件。
 ## 踩过的坑（动手前先读这一段）
 
 - **结论**：改设置或皮肤读写逻辑时，改 `packages/core/src/home.js`，不要在 app 里另写一份。
-  **为什么**：`dsh-skin doctor` 在终端里读的就是这一份。两份实现必然漂移，而漂移的后果是
+  **为什么**：`css-guard doctor` 在终端里读的就是这一份。两份实现必然漂移，而漂移的后果是
   体检报出来的现状不是程序真正用的那份 —— agent 拿着错的诊断去修，会越修越远。
   **代价**：没量到；这一条是重构时主动收敛的，不是事故后补的。
 
 - **结论**：`packages/core` 里永远不要 `require("electron")`。
-  **为什么**：CI 会为了跑一次样式检查去装整个 Electron，而 `dsh-skin doctor` 在一台没装程序的
+  **为什么**：CI 会为了跑一次样式检查去装整个 Electron，而 `css-guard doctor` 在一台没装程序的
   机器上就跑不起来 —— 那恰恰是最需要它的场景。
   **代价**：没量到。
 
@@ -71,7 +71,7 @@ adapters/       DSH 插件。
   **代价**：一次截图往返。
 
 - **结论**：Linux 的 `executableName` 必须在 `electron-builder.yml` 里显式写。
-  **为什么**：它默认取 `package.json` 的 `name`，而这里是 `@dsh-skin/app` —— 清洗后仍带 `@`，
+  **为什么**：它默认取 `package.json` 的 `name`，而这里是 `@css-guard/app` —— 清洗后仍带 `@`，
   AppImage 直接拒绝构建。macOS 用的是 `productName`，所以**本机永远发现不了**。
   **代价**：一轮 Docker（约 5 分钟）；如果没有 Docker 这一步，Linux 包会带着一个必炸的配置发出去。
 

@@ -1,6 +1,6 @@
 "use strict";
 /**
- * dsh-skin —— 主进程。
+ * css-guard —— 主进程。
  *
  * 一个窗口装两件事：
  *   工作室 —— 挑皮肤、实时预览、跑检查、导入素材、新建皮肤。
@@ -12,7 +12,7 @@
 const { app, BrowserWindow, Menu, ipcMain, dialog, shell: electronShell } = require("electron");
 const fs = require("node:fs");
 const path = require("node:path");
-const core = require("@dsh-skin/core");
+const core = require("css-guard");
 
 const paths = require("./paths");
 const state = require("./state");
@@ -27,9 +27,9 @@ const rescueScripts = require("./rescue-scripts");
 proto.registerScheme();
 
 /* ── 急救模式 ──────────────────────────────────────────────────────────
-   用户从 ~/.dsh-skin/急救/ 里双击进来的。做完打印、立刻退出，不开任何窗口。
+   用户从 ~/.css-guard/急救/ 里双击进来的。做完打印、立刻退出，不开任何窗口。
    为什么要在程序里做而不是让脚本去调命令行：一个不写代码的用户机器上多半没有
-   Node，`npx @dsh-skin/cli` 跑不起来。而这个程序本身就是他已经装好的运行时。 */
+   Node，`npx @css-guard/cli` 跑不起来。而这个程序本身就是他已经装好的运行时。 */
 const RECOVERY_FLAG = "--recovery=";
 const recoveryArg = process.argv.find((a) => a.startsWith(RECOVERY_FLAG));
 if (recoveryArg) {
@@ -42,7 +42,7 @@ function runRescue(action) {
   try {
     if (action === "doctor") {
       const report = core.doctor.diagnose({ builtinRoots: [paths.builtinSkins()] });
-      say("dsh-skin 体检\n");
+      say("css-guard 体检\n");
       for (const c of report.checks) {
         say(`  ${mark[c.level]} ${c.title}`);
         if (c.detail) say(`      ${c.detail}`);
@@ -65,13 +65,13 @@ function runRescue(action) {
       } else {
         recovery.checkpoint("before-undo", "回退之前的状态");
         const result = core.history.restore(target);
-        say(result.ok ? `已回到「${result.label}」，改了 ${result.changes.length} 处。\n现在可以打开 dsh-skin 了。`
+        say(result.ok ? `已回到「${result.label}」，改了 ${result.changes.length} 处。\n现在可以打开 css-guard 了。`
                       : `没成功：${result.error}`);
       }
     } else if (action === "safe-on" || action === "safe-off") {
       core.home.setSafeMode(action === "safe-on", "从急救文件里点的");
       say(action === "safe-on"
-        ? "已设置：下次启动不套任何皮肤。\n你的皮肤一套都没丢，只是暂时不生效。现在去打开 dsh-skin。"
+        ? "已设置：下次启动不套任何皮肤。\n你的皮肤一套都没丢，只是暂时不生效。现在去打开 css-guard。"
         : "已恢复正常启动，皮肤会重新生效。");
     } else {
       say(`不认识的急救动作：${action}`);
@@ -95,15 +95,15 @@ function openStudio() {
   if (studio && !studio.isDestroyed()) { studio.show(); studio.focus(); return studio; }
   studio = new BrowserWindow({
     width: 1240, height: 840, minWidth: 900, minHeight: 620,
-    title: "dsh-skin", backgroundColor: "#10131c",
+    title: "css-guard", backgroundColor: "#10131c",
     // 冒烟测试要在不弹窗的情况下把整条启动路径跑一遍。除此之外它永远是可见的。
-    show: !process.env.DSH_SKIN_HEADLESS,
+    show: !process.env.CSS_GUARD_HEADLESS,
     webPreferences: {
       preload: path.join(__dirname, "..", "preload", "index.js"),
       contextIsolation: true, nodeIntegration: false,
     },
   });
-  studio.loadURL("dshskin://app/index.html");
+  studio.loadURL("cssguard://app/index.html");
   // 界面出来了 = 这次启动是好的。清掉断路器的标记。
   studio.webContents.once("did-finish-load", () => recovery.bootSucceeded());
   studio.on("closed", () => { studio = null; });
@@ -181,7 +181,7 @@ function buildMenu() {
             buildMenu();
             notify("skin:changed", { id: state.read().skin, reason: "safe-mode" });
           } },
-        { label: "打开我的 dsh-skin 目录", click: () => electronShell.openPath(paths.USER_ROOT) },
+        { label: "打开我的 css-guard 目录", click: () => electronShell.openPath(paths.USER_ROOT) },
       ],
     },
     {
@@ -197,8 +197,8 @@ function buildMenu() {
     {
       label: "帮助",
       submenu: [
-        { label: "皮肤格式说明", click: () => electronShell.openExternal("https://github.com/LinzOpen/dsh-skin/blob/main/docs/skin-format.md") },
-        { label: "项目主页", click: () => electronShell.openExternal("https://github.com/LinzOpen/dsh-skin") },
+        { label: "皮肤格式说明", click: () => electronShell.openExternal("https://github.com/LinzOpen/css-guard/blob/main/docs/skin-format.md") },
+        { label: "项目主页", click: () => electronShell.openExternal("https://github.com/LinzOpen/css-guard") },
       ],
     },
   ]));
@@ -256,7 +256,7 @@ function registerIpc() {
     const report = core.validateCss(raw, { dir: skin.dir, assetsDir: skin.assets });
     let css = core.resolveCss(raw, skins.assetBase(id));
     const backdrop = skins.currentBackdrop(skin);
-    if (backdrop) css += `\n:root { --dsh-backdrop: url("${skins.assetBase(id)}/${backdrop}"); }\n`;
+    if (backdrop) css += `\n:root { --skin-backdrop: url("${skins.assetBase(id)}/${backdrop}"); }\n`;
     return { css, report, skin };
   });
 
@@ -299,7 +299,7 @@ function registerIpc() {
     const skin = skins.find(id);
     if (!skin) return { ok: false, error: "找不到这套皮肤" };
     // 内置皮肤在程序包里，删了下次升级又回来，而且用户会以为删失败了。
-    // 带上分隔符再比：不带的话 ~/.dsh-skin/skinsXXX/foo 也会 startsWith 成功，
+    // 带上分隔符再比：不带的话 ~/.css-guard/skinsXXX/foo 也会 startsWith 成功，
     // 于是一个不在用户目录里的皮肤被当成可删的。
     if (!isUnderUserSkins(skin.dir)) {
       return { ok: false, error: "这是内置皮肤，删不掉。想改它就在自己的皮肤目录里放一套同 id 的，它会覆盖内置那套。" };
@@ -347,7 +347,7 @@ function registerIpc() {
 
   /* ── 救援 ────────────────────────────────────────────────────────────
      这一组必须在程序还能打开的时候可用；程序打不开时，同样的能力在
-     `dsh-skin doctor / undo / safe-mode` 里，读写的是同一批文件。 */
+     `css-guard doctor / undo / safe-mode` 里，读写的是同一批文件。 */
   ipcMain.handle("recovery:status", () => ({
     ...core.doctor.diagnose({ builtinRoots: [paths.builtinSkins()] }),
     boot,
@@ -409,7 +409,7 @@ function registerIpc() {
 app.whenReady().then(() => {
   proto.install();
   paths.ensureUserDirs();
-  // 让命令行也知道内置皮肤在哪。不记的话，`dsh-skin doctor` 在终端里看不到
+  // 让命令行也知道内置皮肤在哪。不记的话，`css-guard doctor` 在终端里看不到
   // 内置皮肤，会把"当前用的是内置皮肤"误报成"这套皮肤不存在"。
   core.home.recordInstall({
     builtinSkins: paths.builtinSkins(),

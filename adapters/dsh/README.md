@@ -1,6 +1,6 @@
-# dsh-skin-adapter
+# dsh-css-guard
 
-Serves a `dsh-skin` library to a DSH (DeepSeek Harness) renderer.
+Serves a `css-guard` library to a DSH (DeepSeek Harness) renderer.
 
 ## Why this exists
 
@@ -26,7 +26,7 @@ GET /css/<id>          可注入的 CSS，__SKIN__ 已替换
 GET /skin/<id>/<path>  素材，长缓存、immutable
 ```
 
-Only listens on `127.0.0.1`. `DSH_SKIN_PORT` 改端口（默认 3099），`DSH_SKIN_BUILTIN` 加一个皮肤根。
+Only listens on `127.0.0.1`. `CSS_GUARD_PORT` 改端口（默认 3099），`CSS_GUARD_BUILTIN` 加一个皮肤根。
 
 ## Verification status · 验证边界
 

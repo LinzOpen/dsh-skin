@@ -72,7 +72,7 @@ test("缺必需变量是 warn 不是 error", () => {
 });
 
 test("素材不存在 / 越出目录都是 error", () => {
-  const dir = fs.mkdtempSync(path.join(os.tmpdir(), "dsh-skin-"));
+  const dir = fs.mkdtempSync(path.join(os.tmpdir(), "css-guard-"));
   fs.mkdirSync(path.join(dir, "assets"));
   fs.writeFileSync(path.join(dir, "assets", "bg.png"), "x");
   assert.equal(validateCss(`${OK_VARS}\n#a{background:url("__SKIN__/bg.png");}`, { dir }).errors, 0);
@@ -88,8 +88,8 @@ test("每条规则都带 why —— 界面直接显示，不能有空的", () =>
 });
 
 test("resolveCss 换掉全部占位符并吃掉重复斜杠", () => {
-  assert.equal(resolveCss('a{background:url("__SKIN__/a.png"),url("__SKIN__/b.png")}', "dshskin://x/"),
-    'a{background:url("dshskin://x/a.png"),url("dshskin://x/b.png")}');
+  assert.equal(resolveCss('a{background:url("__SKIN__/a.png"),url("__SKIN__/b.png")}', "cssguard://x/"),
+    'a{background:url("cssguard://x/a.png"),url("cssguard://x/b.png")}');
 });
 
 test("manifest 归一化补齐缺省字段", () => {
@@ -107,7 +107,7 @@ test("非法 id 与越权 assets 被拒", () => {
 });
 
 test("坏皮肤只让自己 broken，不影响同目录其他皮肤", () => {
-  const root = fs.mkdtempSync(path.join(os.tmpdir(), "dsh-skin-lib-"));
+  const root = fs.mkdtempSync(path.join(os.tmpdir(), "css-guard-lib-"));
   fs.mkdirSync(path.join(root, "good"));
   fs.writeFileSync(path.join(root, "good", "skin.css"), OK_VARS);
   fs.writeFileSync(path.join(root, "good", "skin.json"), '{"name":"好的"}');
@@ -123,7 +123,7 @@ test("坏皮肤只让自己 broken，不影响同目录其他皮肤", () => {
 
 test("后面的根覆盖前面的同 id 皮肤", () => {
   const mk = (name) => {
-    const root = fs.mkdtempSync(path.join(os.tmpdir(), "dsh-skin-ov-"));
+    const root = fs.mkdtempSync(path.join(os.tmpdir(), "css-guard-ov-"));
     fs.mkdirSync(path.join(root, "shared"));
     fs.writeFileSync(path.join(root, "shared", "skin.css"), OK_VARS);
     fs.writeFileSync(path.join(root, "shared", "skin.json"), JSON.stringify({ name }));

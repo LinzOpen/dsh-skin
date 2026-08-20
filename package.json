@@ -1,5 +1,5 @@
 {
-  "name": "dsh-skin-monorepo",
+  "name": "css-guard-monorepo",
   "version": "0.1.0",
   "private": true,
   "description": "Skin engine, studio app and SDK for Electron / web UIs",
@@ -12,25 +12,25 @@
     "node": ">=20"
   },
   "scripts": {
-    "start": "npm start --workspace @dsh-skin/app",
+    "start": "npm start --workspace @css-guard/app",
     "build:skins": "node scripts/build-skins.js",
     "test": "node --test packages/core/test/*.test.js",
-    "validate": "node packages/cli/bin/dsh-skin.js validate skins",
+    "validate": "node packages/cli/bin/css-guard.js validate skins",
     "lint": "node scripts/check-repo.js",
     "check": "npm run lint && npm test && npm run validate",
-    "pack:mac": "npm run pack:mac --workspace @dsh-skin/app",
-    "pack:win": "npm run pack:win --workspace @dsh-skin/app",
-    "pack:linux": "npm run pack:linux --workspace @dsh-skin/app",
-    "test:adapter": "node --test adapters/dsh-plugin/test/*.test.js",
+    "pack:mac": "npm run pack:mac --workspace @css-guard/app",
+    "pack:win": "npm run pack:win --workspace @css-guard/app",
+    "pack:linux": "npm run pack:linux --workspace @css-guard/app",
+    "test:adapter": "node --test adapters/dsh/test/*.test.js",
     "test:e2e": "electron app/test/smoke.js && electron packages/host/test/smoke.js",
     "icon": "electron scripts/make-icon.js"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/LinzOpen/dsh-skin.git"
+    "url": "git+https://github.com/LinzOpen/css-guard.git"
   },
   "bugs": {
-    "url": "https://github.com/LinzOpen/dsh-skin/issues"
+    "url": "https://github.com/LinzOpen/css-guard/issues"
   },
-  "homepage": "https://github.com/LinzOpen/dsh-skin#readme"
+  "homepage": "https://github.com/LinzOpen/css-guard#readme"
 }

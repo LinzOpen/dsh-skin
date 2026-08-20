@@ -1,13 +1,15 @@
 "use strict";
-/* 工作室的渲染进程。能碰到的主进程能力全在 window.dshSkin 里（见 preload）。 */
+/* 工作室的渲染进程。能碰到的主进程能力全在 window.cssGuard 里（见 preload）。 */
 
-const api = window.dshSkin;
+const api = window.cssGuard;
 const $ = (id) => document.getElementById(id);
 
 const ui = {
   skins: [],
   current: null,
   scheme: "system",   // system | light | dark
+  query: "",          // 搜索词
+  tag: "",            // 标签筛选
 };
 
 /* ── 小工具 ─────────────────────────────────────────────────────────── */
@@ -40,7 +42,7 @@ function el(tag, props = {}, children = []) {
 function swatchStyle(skin) {
   if (skin.preview) {
     // preview 是文件名，可能含空格；encodeURIComponent 之后放进 url()。
-    return `background-image:url("dshskin://skin/${skin.id}/${encodeURIComponent(skin.preview)}")`;
+    return `background-image:url("cssguard://skin/${skin.id}/${encodeURIComponent(skin.preview)}")`;
   }
   // 没有缩略图就画色卡：左浅右深，斜切一刀，强调色描边。
   // 一眼看出这套皮肤两种模式各是什么样，比一块纯色有用得多。
@@ -51,28 +53,79 @@ function swatchStyle(skin) {
   return `background:${skin.accent || "#4c6ef5"}`;
 }
 
+/** 一套皮肤是否命中当前搜索 + 标签筛选。搜名字、标签、作者、tagline、id。 */
+function matches(skin) {
+  if (ui.tag && !(skin.tags || []).includes(ui.tag)) return false;
+  const kw = ui.query.trim().toLowerCase();
+  if (!kw) return true;
+  const hay = [skin.name, skin.id, skin.author, skin.tagline, ...(skin.tags || [])]
+    .filter(Boolean).join(" ").toLowerCase();
+  return hay.includes(kw);
+}
+
 function renderList() {
   const list = $("list");
   list.replaceChildren();
   if (!ui.skins.length) {
     list.appendChild(el("div", { class: "empty", text: "皮肤库是空的。点「新建皮肤」或「导入素材」。" }));
+    $("count").textContent = "0 套";
+    return;
   }
-  for (const skin of ui.skins) {
+  const rows = ui.skins.filter(matches);
+  if (!rows.length) {
+    list.appendChild(el("div", { class: "empty-filtered", text: "没有匹配的皮肤。换个词，或清空筛选。" }));
+  }
+  for (const skin of rows) {
     const badges = [];
     if (skin.broken) badges.push(el("span", { class: "badge err", text: "读不出来" }));
     if (skin.mine) badges.push(el("span", { class: "badge mine", text: "我的" }));
     const title = el("b", {}, [document.createTextNode(skin.name), ...badges]);
+
+    // 悬停操作：在访达里显示、删除（删除只对"我的"皮肤开放，内置的删了也会回来）
+    const acts = el("span", { class: "hover-acts" });
+    const revealBtn = el("button", { title: "在文件夹里显示", text: "打开" });
+    revealBtn.addEventListener("click", (e) => { e.stopPropagation(); api.skins.reveal(skin.id); });
+    acts.appendChild(revealBtn);
+    if (skin.mine) {
+      const delBtn = el("button", { class: "danger", title: "删除这套皮肤", text: "删除" });
+      delBtn.addEventListener("click", async (e) => {
+        e.stopPropagation();
+        const result = await api.skins.remove(skin.id);
+        if (result.ok) { await reload(false); toast(`已删除「${skin.name}」`); }
+        else if (result.error) toast(result.error);
+      });
+      acts.appendChild(delBtn);
+    }
+
+    const head = el("span", { class: "skin-main" }, [title, el("small", { text: skin.broken ? skin.error : (skin.tagline || skin.id) })]);
     const row = el("button", {
       class: "skin", "aria-current": String(ui.current === skin.id),
       title: skin.dir,
     }, [
       el("span", { class: "swatch", style: swatchStyle(skin) }),
-      el("span", {}, [title, el("small", { text: skin.broken ? skin.error : (skin.tagline || skin.id) })]),
+      head,
+      acts,
     ]);
     row.addEventListener("click", () => select(skin.id));
     list.appendChild(row);
   }
-  $("count").textContent = `${ui.skins.length} 套`;
+
+  const shown = rows.length;
+  const total = ui.skins.length;
+  $("count").textContent = shown === total ? `${total} 套` : `${shown} / ${total} 套`;
+}
+
+/** 用全部皮肤的标签填充筛选下拉。 */
+function renderTagFilter() {
+  const select = $("tag");
+  const tags = [...new Set(ui.skins.flatMap((s) => s.tags || []))].sort((a, b) => a.localeCompare(b, "zh"));
+  const current = ui.tag;
+  select.replaceChildren(el("option", { value: "", text: "全部标签" }));
+  for (const t of tags) {
+    const opt = el("option", { value: t, text: t });
+    if (t === current) opt.selected = true;
+    select.appendChild(opt);
+  }
 }
 
 /* ── 预览 ───────────────────────────────────────────────────────────── */
@@ -87,10 +140,10 @@ function frameDoc() {
 function injectPreview(css) {
   const doc = frameDoc();
   if (!doc) return false;
-  let style = doc.getElementById("dsh-skin-preview");
+  let style = doc.getElementById("css-guard-preview");
   if (!style) {
     style = doc.createElement("style");
-    style.id = "dsh-skin-preview";
+    style.id = "css-guard-preview";
     doc.head.appendChild(style);
   }
   style.textContent = css || "";
@@ -178,13 +231,14 @@ async function select(id) {
 
 async function reload(keepSelection = true) {
   const [skins, paths] = await Promise.all([api.skins.list(), api.app.paths()]);
-  // 用分隔符做前缀比对；否则 ~/.dsh-skin/skinsXXX 里的皮肤会被标成「我的」。
+  // 用分隔符做前缀比对；否则 ~/.css-guard/skinsXXX 里的皮肤会被标成「我的」。
   const sep = paths.userSkins.includes("\\") ? "\\" : "/";
   const underUser = (dir) => dir === paths.userSkins || dir.startsWith(paths.userSkins + sep);
   ui.skins = skins.map((s) => ({ ...s, mine: underUser(s.dir) }));
   const state = await api.state.read();
   const want = keepSelection && ui.current ? ui.current : state.skin;
   ui.current = ui.skins.some((s) => s.id === want) ? want : (ui.skins[0]?.id ?? null);
+  renderTagFilter();
   renderList();
   if (ui.current) await select(ui.current);
   else renderReport(null, null);
@@ -244,6 +298,8 @@ function wire() {
     applyScheme();
   });
 
+  $("q").addEventListener("input", (e) => { ui.query = e.target.value; renderList(); });
+  $("tag").addEventListener("change", (e) => { ui.tag = e.target.value; renderList(); });
   $("refresh").addEventListener("click", async () => { await api.skins.refresh(); await reload(); toast("已重新扫描"); });
   $("reveal").addEventListener("click", () => ui.current && api.skins.reveal(ui.current));
   $("apply").addEventListener("click", async () => {

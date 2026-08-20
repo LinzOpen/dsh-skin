@@ -1,11 +1,11 @@
 {
-  "name": "@dsh-skin/cli",
+  "name": "@css-guard/cli",
   "version": "0.1.0",
-  "description": "Validate, scaffold and package dsh-skin skins from the command line.",
+  "description": "Validate, scaffold and package css-guard skins from the command line.",
   "license": "MIT",
-  "bin": { "dsh-skin": "bin/dsh-skin.js" },
-  "main": "bin/dsh-skin.js",
+  "bin": { "css-guard": "bin/css-guard.js" },
+  "main": "bin/css-guard.js",
   "files": ["bin", "README.md"],
-  "dependencies": { "@dsh-skin/core": "0.1.0" },
+  "dependencies": { "css-guard": "0.1.0" },
   "engines": { "node": ">=20" }
 }

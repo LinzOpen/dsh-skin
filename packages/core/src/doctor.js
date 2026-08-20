@@ -53,7 +53,7 @@ function diagnose(options = {}, env) {
   if (detailed.corrupt) {
     checks.push(check("state", "warn", "设置文件坏了，已隔离", 
       `坏掉的那份备份在 ${detailed.corrupt}；当前用的是默认设置。`,
-      { command: "dsh-skin undo", description: "想找回之前的设置，用还原点恢复。" }));
+      { command: "css-guard undo", description: "想找回之前的设置，用还原点恢复。" }));
   } else if (detailed.repaired.length) {
     checks.push(check("state", "warn", "设置里有几项超出范围，已收拢",
       `被改回合法值的字段：${detailed.repaired.join("、")}`, null));
@@ -66,7 +66,7 @@ function diagnose(options = {}, env) {
   if (safe) {
     checks.push(check("safe-mode", "warn", "正处在安全模式", 
       `原因：${safe.reason}${safe.at ? `（${safe.at}）` : ""}。程序会以不套任何皮肤的状态启动。`,
-      { command: "dsh-skin safe-mode off", description: "确认问题解决后关掉它。" }));
+      { command: "css-guard safe-mode off", description: "确认问题解决后关掉它。" }));
   } else {
     checks.push(check("safe-mode", "ok", "不在安全模式", ""));
   }
@@ -77,7 +77,7 @@ function diagnose(options = {}, env) {
   if (bootFails > 0) {
     checks.push(check("boot", "warn", `上一次启动没走完（累计 ${bootFails} 次）`,
       "程序启动到界面出来之前就退出了。连续两次就会自动进安全模式。",
-      { command: "dsh-skin safe-mode on", description: "先进安全模式，排除是某套皮肤引起的。" }));
+      { command: "css-guard safe-mode on", description: "先进安全模式，排除是某套皮肤引起的。" }));
   } else {
     checks.push(check("boot", "ok", "上一次启动是正常结束的", ""));
   }
@@ -98,7 +98,7 @@ function diagnose(options = {}, env) {
   if (broken.length) {
     checks.push(check("skins-broken", "warn", `${broken.length} 套皮肤读不出来`,
       broken.map((s) => `${s.id}：${s.error}`).join("；"),
-      { command: "dsh-skin validate ~/.dsh-skin/skins", description: "逐套看具体是哪里坏了。" }));
+      { command: "css-guard validate ~/.css-guard/skins", description: "逐套看具体是哪里坏了。" }));
   } else {
     checks.push(check("skins-broken", "ok", `${skins.length} 套皮肤都读得出来`, ""));
   }
@@ -115,7 +115,7 @@ function diagnose(options = {}, env) {
   if (blocked.length) {
     checks.push(check("skins-blocked", "warn", `${blocked.length} 套皮肤被检查器拦住，套不上`,
       blocked.map((b) => `${b.id}：${b.why.join("、")}`).join("；"),
-      { command: "dsh-skin validate ~/.dsh-skin/skins", description: "拦住是对的 —— 这些皮肤会访问网络或引用了不存在的素材。" }));
+      { command: "css-guard validate ~/.css-guard/skins", description: "拦住是对的 —— 这些皮肤会访问网络或引用了不存在的素材。" }));
   } else {
     checks.push(check("skins-blocked", "ok", "所有皮肤都通过了检查", ""));
   }
@@ -134,11 +134,11 @@ function diagnose(options = {}, env) {
     } else if (!found) {
       checks.push(check("current-skin", "error", `选中的皮肤 ${current} 不存在`,
         "程序会显示成没有皮肤。多半是这套皮肤被删了或改了名字。",
-        { command: "dsh-skin undo", description: "回到删掉它之前的那个还原点。" }));
+        { command: "css-guard undo", description: "回到删掉它之前的那个还原点。" }));
     } else if (blocked.some((b) => b.id === current)) {
       checks.push(check("current-skin", "error", `选中的皮肤 ${current} 被检查器拦着`,
         "它不会被注入任何窗口 —— 表现就是「换了皮肤但界面没变」。",
-        { command: "dsh-skin validate ~/.dsh-skin/skins/" + current, description: "看拦它的是哪一条。" }));
+        { command: "css-guard validate ~/.css-guard/skins/" + current, description: "看拦它的是哪一条。" }));
     } else {
       checks.push(check("current-skin", "ok", `选中的皮肤 ${current} 可以套用`, ""));
     }
@@ -152,7 +152,7 @@ function diagnose(options = {}, env) {
   if (!usable.length) {
     checks.push(check("history", "warn", "一个还原点都没有",
       "还没有做过任何会改变现状的操作，或者还原点被清掉了。出事时没得回退。",
-      { command: "dsh-skin snapshot -m \"手动存档\"", description: "现在存一个，作为已知可用的基线。" }));
+      { command: "css-guard snapshot -m \"手动存档\"", description: "现在存一个，作为已知可用的基线。" }));
   } else {
     checks.push(check("history", "ok", `有 ${usable.length} 个还原点`,
       `最近的一个：${usable[0].label}（${usable[0].at}）`));

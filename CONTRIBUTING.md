@@ -29,9 +29,9 @@ revised.
 ### Submitting one
 
 ```bash
-npx @dsh-skin/cli new my-skin --dir skins
+npx @css-guard/cli new my-skin --dir skins
 # 改 skins/my-skin/skin.css，边改边在程序里看
-npx @dsh-skin/cli validate skins/my-skin     # 必须零 error
+npx @css-guard/cli validate skins/my-skin     # 必须零 error
 npm run lint                                  # 仓库自检
 ```
 
@@ -66,5 +66,5 @@ Things worth knowing before you change something:
 ## Reporting problems
 
 - Security: [SECURITY.md](SECURITY.md) — don't open a public issue with a working payload.
-- Everything else: [open an issue](https://github.com/LinzOpen/dsh-skin/issues). A skin that renders
+- Everything else: [open an issue](https://github.com/LinzOpen/css-guard/issues). A skin that renders
   wrong is much easier to fix with the skin folder attached.

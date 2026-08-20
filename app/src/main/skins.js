@@ -9,7 +9,7 @@
  */
 const fs = require("node:fs");
 const path = require("node:path");
-const core = require("@dsh-skin/core");
+const core = require("css-guard");
 const { skinRoots } = require("./paths");
 
 let cache = null;
@@ -23,7 +23,7 @@ function invalidate() { cache = null; }
 function find(id) { return list().find((s) => s.id === id) || null; }
 
 /** 素材前缀。每个宿主自己决定怎么取图，这里用 App 注册的自定义协议。 */
-const assetBase = (id) => `dshskin://skin/${id}`;
+const assetBase = (id) => `cssguard://skin/${id}`;
 
 /**
  * 读一套皮肤的 CSS：换掉 __SKIN__、跑一遍检查。
@@ -37,9 +37,9 @@ function compile(id) {
   const report = core.validateCss(raw, { dir: skin.dir, assetsDir: skin.assets });
   if (!report.ok) return { css: null, report, skin };
   let css = core.resolveCss(raw, assetBase(id));
-  // 多背景皮肤：把当前这张塞进变量。皮肤 CSS 里写 var(--dsh-backdrop)。
+  // 多背景皮肤：把当前这张塞进变量。皮肤 CSS 里写 var(--skin-backdrop)。
   const backdrop = currentBackdrop(skin);
-  if (backdrop) css += `\n:root { --dsh-backdrop: url("${assetBase(id)}/${backdrop}"); }\n`;
+  if (backdrop) css += `\n:root { --skin-backdrop: url("${assetBase(id)}/${backdrop}"); }\n`;
   return { css, report, skin };
 }
 

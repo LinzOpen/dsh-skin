@@ -5,7 +5,7 @@
  * 这一层刻意放在 core 而不是 app 里，因为**救援必须能在 GUI 打不开的时候进行**。
  * 如果只有 Electron 主进程知道设置长什么样，那么程序一旦起不来，用户和他的 agent
  * 就同时失去了唯一的入口 —— 这正是要防的场景。放在这里，命令行和程序读的是同一份
- * 实现，agent 用 `dsh-skin doctor --json` 看到的就是程序看到的。
+ * 实现，agent 用 `css-guard doctor --json` 看到的就是程序看到的。
  *
  * 三条硬规矩：
  *   1. 读永远不抛。设置文件坏了就退回默认值，而不是让调用方崩。
@@ -20,7 +20,7 @@ const fs = require("node:fs");
 const os = require("node:os");
 const path = require("node:path");
 
-const DEFAULT_DIRNAME = ".dsh-skin";
+const DEFAULT_DIRNAME = ".css-guard";
 
 /** 设置的形状与取值范围。**range 不是洁癖，是防止一次坏写入把程序卡死** ——
  *  rotateMinutes 被写成 0 会让轮播每分钟都触发；写成字符串会让比较永远为假。 */
@@ -72,7 +72,7 @@ function coerce(key, raw) {
 }
 
 function paths(env = process.env) {
-  const root = env.DSH_SKIN_HOME || path.join(os.homedir(), DEFAULT_DIRNAME);
+  const root = env.CSS_GUARD_HOME || path.join(os.homedir(), DEFAULT_DIRNAME);
   return {
     root,
     skins: path.join(root, "skins"),
@@ -144,7 +144,7 @@ const patchState = (delta, env) => writeState({ ...readState(env), ...(delta || 
 
 /* ── 安装信息 ────────────────────────────────────────────────────────────
    程序每次启动把"我装在哪、内置皮肤在哪、什么版本"写下来，命令行才看得见。
-   没有这一步，`dsh-skin doctor` 在终端里跑会看不到内置皮肤，于是把
+   没有这一步，`css-guard doctor` 在终端里跑会看不到内置皮肤，于是把
    "当前用的是内置皮肤 midnight-harbor" 误报成"这套皮肤不存在" ——
    一个把人引向错误方向的诊断，比没有诊断更糟。 */
 

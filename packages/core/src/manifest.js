@@ -12,7 +12,7 @@ const path = require("node:path");
 const crypto = require("node:crypto");
 
 /** 皮肤 id：只允许小写字母、数字和连字符。
- *  它会被拼进 URL（`dshskin://<id>/...`）和文件路径，放开就等于放开路径穿越。 */
+ *  它会被拼进 URL（`cssguard://<id>/...`）和文件路径，放开就等于放开路径穿越。 */
 const ID_RE = /^[a-z0-9][a-z0-9-]{0,63}$/;
 
 const APPEARANCES = new Set(["light", "dark", "both"]);
@@ -55,7 +55,7 @@ function asArrayOfStrings(value) {
  * 目录名推出一个合法 id。
  *
  * 为什么要推而不是直接报错：id 必须是 URL 和路径安全的（它会被拼进
- * `dshskin://skin/<id>/...`），但用户新建目录时几乎一定用自己的语言 ——
+ * `cssguard://skin/<id>/...`），但用户新建目录时几乎一定用自己的语言 ——
  * 中文、日文、带空格的短语。直接判"不合法"的后果是：一套完全正常的皮肤
  * 被报成「读不出来」，报错还看不懂，而用户根本不知道自己做错了什么。
  *
@@ -111,7 +111,7 @@ function normalizeManifest(raw, dirName, file) {
     assets,
     preview: String(raw.preview || ""),
     requires: asArrayOfStrings(raw.requires),
-    // 多背景：宿主把当前这张塞进 --dsh-backdrop，皮肤的 CSS 只认这个变量。
+    // 多背景：宿主把当前这张塞进 --skin-backdrop，皮肤的 CSS 只认这个变量。
     // 这样"换一张图"不用重注整段样式 —— 重注会闪，改一个变量不会。
     // 调用方（界面 / 文档）可以据此提示"这套皮肤的 id 是从目录名推出来的"。
     derivedId: derived,

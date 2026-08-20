@@ -1,8 +1,8 @@
 {
-  "name": "@dsh-skin/app",
+  "name": "@css-guard/app",
   "version": "0.1.0",
   "private": true,
-  "description": "dsh-skin — skin studio and skinnable shell for Electron / web UIs",
+  "description": "css-guard — skin studio and skinnable shell for Electron / web UIs",
   "license": "MIT",
   "main": "src/main/index.js",
   "scripts": {
@@ -12,17 +12,17 @@
     "pack:linux": "electron-builder --linux --publish never"
   },
   "dependencies": {
-    "@dsh-skin/core": "0.1.0"
+    "css-guard": "0.1.0"
   },
   "devDependencies": {
     "electron": "43.4.1",
     "electron-builder": "^26.0.12"
   },
   "author": {
-    "name": "dsh-skin contributors"
+    "name": "css-guard contributors"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/LinzOpen/dsh-skin.git"
+    "url": "git+https://github.com/LinzOpen/css-guard.git"
   }
 }

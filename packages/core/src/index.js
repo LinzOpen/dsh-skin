@@ -1,6 +1,6 @@
 "use strict";
 /**
- * @dsh-skin/core —— 皮肤引擎。
+ * css-guard —— 皮肤引擎。
  *
  * 刻意不依赖 Electron、不依赖 DOM、零第三方依赖：这样同一份规则能同时跑在
  * CI（node --test）、命令行、Electron 主进程和任何别的宿主里。

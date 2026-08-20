@@ -1,5 +1,5 @@
 {
-  "name": "@dsh-skin/host",
+  "name": "@css-guard/electron",
   "version": "0.1.0",
   "description": "Make any Electron window skinnable in three lines: register a scheme, point at a skin folder, apply.",
   "license": "MIT",
@@ -8,6 +8,6 @@
   "files": ["src", "README.md"],
   "keywords": ["electron", "skin", "theme", "css"],
   "peerDependencies": { "electron": ">=28" },
-  "dependencies": { "@dsh-skin/core": "0.1.0" },
+  "dependencies": { "css-guard": "0.1.0" },
   "engines": { "node": ">=20" }
 }

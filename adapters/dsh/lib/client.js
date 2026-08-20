@@ -1,5 +1,5 @@
 window.__ModuleLoader__.load({
-	id: "dsh-skin-adapter",
+	id: "dsh-css-guard",
 	factory: () => {
 		var module = { exports: {} };
 		var exports = module.exports;
@@ -22,9 +22,9 @@ window.__ModuleLoader__.load({
 		const inject = [];
 		const PORT = 3099;
 		const BASE = `http://127.0.0.1:${PORT}`;
-		const STORE = "dsh-skin.selected.v1";
-		const STYLE_ID = "dsh-skin-css";
-		const PANEL_ID = "dsh-skin-panel";
+		const STORE = "css-guard.selected.v1";
+		const STYLE_ID = "css-guard-css";
+		const PANEL_ID = "css-guard-panel";
 
 		const read = () => { try { return window.localStorage.getItem(STORE) || ""; } catch { return ""; } };
 		const save = (id) => { try { window.localStorage.setItem(STORE, id); } catch { /* 无痕模式 */ } };
@@ -46,7 +46,7 @@ window.__ModuleLoader__.load({
 			// 409 = 服务端的检查器拒绝提供这套皮肤。它在响应体里写了原因，
 			// 照原样打进控制台，而不是笼统地说"套用失败"。
 			if (res.status === 409) {
-				console.warn(`[dsh-skin] ${id} 被检查器拒绝：\n${await res.text()}`);
+				console.warn(`[css-guard] ${id} 被检查器拒绝：\n${await res.text()}`);
 				return { ok: false, blocked: true };
 			}
 			if (!res.ok) return { ok: false };
@@ -70,7 +70,7 @@ window.__ModuleLoader__.load({
 #${PANEL_ID} .card[data-on="1"]{border-color:#ffd479}
 #${PANEL_ID} .card .sw{display:block;width:100%;aspect-ratio:16/9;background-size:cover;background-position:center}
 #${PANEL_ID} .card figcaption{padding:5px 7px;font-size:11px;color:#c6d3e8}
-#dsh-skin-toggle{position:fixed;right:16px;bottom:16px;z-index:2147483000;padding:7px 13px;
+#css-guard-toggle{position:fixed;right:16px;bottom:16px;z-index:2147483000;padding:7px 13px;
  border-radius:999px;cursor:pointer;background:#101826e6;color:#e8eef7;border:1px solid #ffffff2b;
  font:12px/1 -apple-system,"PingFang SC",system-ui,sans-serif}`;
 			return style;
@@ -118,7 +118,7 @@ window.__ModuleLoader__.load({
 			paint();
 
 			const toggle = document.createElement("button");
-			toggle.id = "dsh-skin-toggle";
+			toggle.id = "css-guard-toggle";
 			toggle.textContent = "皮肤";
 			toggle.addEventListener("click", () => {
 				panel.dataset.open = panel.dataset.open === "1" ? "0" : "1";

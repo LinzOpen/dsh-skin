@@ -16,7 +16,7 @@
 import { createServer } from "node:http";
 import { createReadStream, existsSync, readFileSync, realpathSync, statSync } from "node:fs";
 import { extname, join, resolve, sep } from "node:path";
-import { scanLibrary, validateCss, resolveCss } from "@dsh-skin/core";
+import { scanLibrary, validateCss, resolveCss } from "css-guard";
 
 const TYPES = {
   ".css": "text/css; charset=utf-8", ".js": "text/javascript; charset=utf-8",
@@ -58,10 +58,10 @@ export function createAssetServer({ roots, port = 3099, host = "127.0.0.1" }) {
     if (!report.ok) {
       const why = report.findings.filter((f) => f.severity === "error")
         .map((f) => `L${f.line} ${f.rule}: ${f.message}`).join("\n   ");
-      return { status: 409, body: `/* dsh-skin 拒绝提供这套皮肤：\n   ${why}\n*/` };
+      return { status: 409, body: `/* css-guard 拒绝提供这套皮肤：\n   ${why}\n*/` };
     }
     let out = resolveCss(raw, `${base}/skin/${skin.id}`);
-    if (skin.backdrops.length) out += `\n:root{--dsh-backdrop:url("${base}/skin/${skin.id}/${skin.backdrops[0]}")}\n`;
+    if (skin.backdrops.length) out += `\n:root{--skin-backdrop:url("${base}/skin/${skin.id}/${skin.backdrops[0]}")}\n`;
     return { status: 200, body: out };
   }
 

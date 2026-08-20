@@ -1,7 +1,7 @@
 {
-  "name": "dsh-skin-adapter",
+  "name": "dsh-css-guard",
   "version": "0.1.0",
-  "description": "DSH (DeepSeek Harness) plugin that serves a dsh-skin library to the DSH renderer.",
+  "description": "DSH (DeepSeek Harness) plugin that serves a css-guard library to the DSH renderer.",
   "license": "MIT",
   "type": "module",
   "main": "lib/index.js",

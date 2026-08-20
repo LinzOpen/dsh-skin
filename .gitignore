@@ -4,4 +4,4 @@ dist/
 .DS_Store
 .env
 # 皮肤打包产物
-*.dsh-skin.zip
+*.css-guard.zip

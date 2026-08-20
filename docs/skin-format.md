@@ -1,9 +1,9 @@
 # Skin format · 皮肤格式
 
 A skin is a folder. Nothing is generated, compiled or registered — copy the folder into
-`~/.dsh-skin/skins/` and it shows up.
+`~/.css-guard/skins/` and it shows up.
 
-一套皮肤就是一个目录。没有生成、没有编译、不用注册 —— 把目录拷进 `~/.dsh-skin/skins/` 就出现了。
+一套皮肤就是一个目录。没有生成、没有编译、不用注册 —— 把目录拷进 `~/.css-guard/skins/` 就出现了。
 
 ```
 midnight-harbor/
@@ -30,7 +30,7 @@ midnight-harbor/
 | `appearance` | | `light` / `dark` / `both`（默认 `both`） |
 | `assets` | | 素材子目录，默认 `assets` |
 | `preview` | | 缩略图文件名 |
-| `backdrops` | | 背景图路径数组。宿主把当前这张塞进 `--dsh-backdrop`；多于一张时可以轮播 |
+| `backdrops` | | 背景图路径数组。宿主把当前这张塞进 `--skin-backdrop`；多于一张时可以轮播 |
 
 JSON Schema: [`packages/core/schema/skin.schema.json`](../packages/core/schema/skin.schema.json)
 
@@ -39,7 +39,7 @@ JSON Schema: [`packages/core/schema/skin.schema.json`](../packages/core/schema/s
 ### `__SKIN__` — the asset placeholder
 
 写 `url("__SKIN__/bg.png")`。宿主套用时会把 `__SKIN__` 替换成它自己的取图前缀 ——
-Electron 宿主换成 `dshskin://skin/<id>`，DSH 适配器换成 `http://127.0.0.1:3099/skin/<id>`。
+Electron 宿主换成 `cssguard://skin/<id>`，DSH 适配器换成 `http://127.0.0.1:3099/skin/<id>`。
 皮肤作者不需要知道宿主用哪种。
 
 Write `url("__SKIN__/bg.png")`. The host substitutes its own asset prefix at apply time, so the same
@@ -108,10 +108,10 @@ html[data-color-scheme="dark"], :root[data-theme="dark"], html.dark, body.dark {
 ```
 
 ```css
-#app, #root { background-image: var(--dsh-backdrop); background-size: cover; }
+#app, #root { background-image: var(--skin-backdrop); background-size: cover; }
 ```
 
-The host sets `--dsh-backdrop` to the current one. Rotation changes **only that variable** —
+The host sets `--skin-backdrop` to the current one. Rotation changes **only that variable** —
 re-injecting the whole stylesheet makes the window flash.
 宿主只改这一个变量。重注整段样式会闪一下。
 
@@ -124,8 +124,8 @@ and the text column, leave the subject band untouched. See the CSS it writes for
 ## Checking · 检查
 
 ```bash
-npx @dsh-skin/cli validate skins/my-skin      # 人看的
-npx @dsh-skin/cli validate skins --json       # 机器读的
+npx @css-guard/cli validate skins/my-skin      # 人看的
+npx @css-guard/cli validate skins --json       # 机器读的
 ```
 
 Exit code 1 when anything is an `error`. That is the CI gate.

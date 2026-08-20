@@ -17,7 +17,7 @@ const VARS = ":root{--color-bg:#101;--color-text:#eee;--color-accent:#0af;}";
 
 function freshHome() {
   const root = fs.mkdtempSync(path.join(os.tmpdir(), "dsh-recovery-"));
-  const env = { DSH_SKIN_HOME: root };
+  const env = { CSS_GUARD_HOME: root };
   home.ensureDirs(env);
   return { root, env };
 }

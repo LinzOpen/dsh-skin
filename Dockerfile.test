@@ -5,7 +5,7 @@
 # 只用仓库里有的东西，所以它验证的是"别人 clone 下来能不能跑"，
 # 而不是"我这台机器能不能跑"。
 #
-#     docker build -f Dockerfile.test -t dsh-skin-test .
+#     docker build -f Dockerfile.test -t css-guard-test .
 #
 # 构建成功 = 全部测试通过。任何一步失败构建就红。
 FROM node:22-bookworm
@@ -33,7 +33,7 @@ COPY . .
 RUN npm run check
 
 # DSH 适配器的真 HTTP 测试
-RUN node --test adapters/dsh-plugin/test/*.test.js
+RUN node --test adapters/dsh/test/*.test.js
 
 # 端到端：真 Electron、真自定义协议、真注入。
 # --no-sandbox：容器里 chrome-sandbox 不是 setuid root，Electron 宁可 abort 也不无沙箱跑。

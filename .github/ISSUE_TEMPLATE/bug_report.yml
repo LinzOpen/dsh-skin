@@ -29,8 +29,8 @@ body:
       options:
         - 桌面程序 · 工作室
         - 桌面程序 · 外壳
-        - "@dsh-skin/host (SDK)"
-        - "@dsh-skin/cli"
+        - "@css-guard/electron (SDK)"
+        - "@css-guard/cli"
         - DSH 适配器
         - 皮肤本身
     validations: { required: true }

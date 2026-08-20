@@ -2,12 +2,12 @@
 <html lang="zh-CN">
 <meta charset="utf-8">
 <meta http-equiv="Content-Security-Policy"
-      content="default-src 'none'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' dshskin: data:; frame-src 'self'">
-<title>dsh-skin</title>
+      content="default-src 'none'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' cssguard: data:; frame-src 'self'">
+<title>css-guard</title>
 <link rel="stylesheet" href="app.css">
 
 <header class="top">
-  <div class="logo">dsh<em>·</em>skin</div>
+  <div class="logo">css<em>·</em>guard</div>
   <div class="tabs" role="tablist">
     <button role="tab" data-view="studio" aria-selected="true">工作室</button>
     <button role="tab" data-view="shellview" aria-selected="false">外壳</button>
@@ -32,6 +32,10 @@
 <main class="view" id="studio" data-active="1">
   <section class="pane">
     <header><span class="grow">皮肤库</span><span id="count"></span></header>
+    <div class="filters">
+      <input type="search" id="q" placeholder="搜名字 / 标签 / 作者…" spellcheck="false" autocomplete="off">
+      <select id="tag" title="按标签筛选"><option value="">全部标签</option></select>
+    </div>
     <div class="scroll" id="list"></div>
     <div class="toolbar">
       <button class="ghost" id="new">新建皮肤</button>
@@ -98,7 +102,7 @@
         <button class="ghost" id="autofix">自动修能修的</button>
         <button class="ghost" id="save-point">现在存一个还原点</button>
         <button class="ghost" id="safe-toggle">进入安全模式</button>
-        <button class="ghost" id="open-home">打开我的 dsh-skin 目录</button>
+        <button class="ghost" id="open-home">打开我的 css-guard 目录</button>
       </div>
       <p class="hint">「回到上一个正常状态」会先给你看它要改什么，你确认了才动手。它只写回和补建，从不删东西。</p>
 
@@ -129,9 +133,9 @@
              所以遇到「双击没反应」，先多双击两次。</p>
           <details style="margin-top:10px">
             <summary style="cursor:default">会用命令行的话（可选）</summary>
-            <pre><code>npx @dsh-skin/cli doctor        # 看现在什么状况
-npx @dsh-skin/cli undo          # 退回上一个还原点
-npx @dsh-skin/cli safe-mode on  # 下次启动不套任何皮肤</code></pre>
+            <pre><code>npx @css-guard/cli doctor        # 看现在什么状况
+npx @css-guard/cli undo          # 退回上一个还原点
+npx @css-guard/cli safe-mode on  # 下次启动不套任何皮肤</code></pre>
             <p>把 <code>doctor --json</code> 的输出整个交给任何一个 AI 助手，它能看懂并告诉你下一步。</p>
           </details>
         </div>

@@ -1,7 +1,7 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://github.com/LinzOpen/dsh-skin/schema/skin.schema.json",
-  "title": "dsh-skin skin.json",
+  "$id": "https://github.com/LinzOpen/css-guard/schema/skin.schema.json",
+  "title": "css-guard skin.json",
   "description": "Manifest for one skin. Every field except `name` is optional; `id` falls back to the directory name.",
   "type": "object",
   "required": [
@@ -78,7 +78,7 @@
       "items": {
         "type": "string"
       },
-      "description": "Optional list of background images, relative to the skin folder. The host picks one and exposes it as the CSS variable --dsh-backdrop; with more than one it can rotate through them without repeats."
+      "description": "Optional list of background images, relative to the skin folder. The host picks one and exposes it as the CSS variable --skin-backdrop; with more than one it can rotate through them without repeats."
     }
   }
 }

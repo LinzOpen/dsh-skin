@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 "use strict";
 /**
- * dsh-skin —— 命令行。
+ * css-guard —— 命令行。
  *
  * 存在的理由只有一个：**皮肤检查必须能在 CI 里跑**。
  * 皮肤是别人 PR 进来的、会被注入进用户界面的代码，人工审 CSS 是审不动的；
@@ -10,14 +10,14 @@
 
 const fs = require("node:fs");
 const path = require("node:path");
-const core = require("@dsh-skin/core");
+const core = require("css-guard");
 const { zipSync } = require("./zip.js");
 
 const C = process.stdout.isTTY && !process.env.NO_COLOR
   ? { red: "\x1b[31m", yellow: "\x1b[33m", green: "\x1b[32m", dim: "\x1b[2m", off: "\x1b[0m" }
   : { red: "", yellow: "", green: "", dim: "", off: "" };
 
-const USAGE = `dsh-skin <command>
+const USAGE = `css-guard <command>
 
 皮肤
   validate [path...]   检查皮肤：安全规则 + 稳定性规则 + 素材是否存在
@@ -39,7 +39,7 @@ const USAGE = `dsh-skin <command>
   --json               所有命令都支持，输出机器可读的 JSON
   help                 这段
 
-给 AI 助手：先跑 \`dsh-skin doctor --json\`，它带着每一条问题的修复命令。`;
+给 AI 助手：先跑 \`css-guard doctor --json\`，它带着每一条问题的修复命令。`;
 
 /** 一个路径是"一套皮肤"还是"一堆皮肤的家"？有 skin.css 就是前者。 */
 function collectSkins(target) {
@@ -111,7 +111,7 @@ const TEMPLATE_CSS = (id, name) => `/* ${name}
      · 绝不钩 .aB3x_9f 这类编译产物类名 —— 它每次构建都会变
      · 绝不用 infinite 动画 —— 一条全窗口的永动动画能把宿主拖到 100% CPU
      · 素材写 url("__SKIN__/xxx.png")，宿主会替换成它自己的取图前缀
-   跑 \`dsh-skin validate\` 会把上面每一条都检查一遍。
+   跑 \`css-guard validate\` 会把上面每一条都检查一遍。
    ———————————————————————————————————————————————————————————— */
 
 :root {
@@ -163,7 +163,7 @@ function cmdNew(id, opts) {
   fs.writeFileSync(path.join(dir, "skin.css"), TEMPLATE_CSS(id, name));
   fs.writeFileSync(path.join(dir, "assets", ".gitkeep"), "");
   console.log(`已生成 ${dir}`);
-  console.log(`  下一步：改 skin.css，然后 dsh-skin validate ${dir}`);
+  console.log(`  下一步：改 skin.css，然后 css-guard validate ${dir}`);
 }
 
 /** 收集皮肤目录下要打包的文件。node_modules 之类的不该进包。 */
@@ -185,11 +185,11 @@ function cmdPack(target, opts) {
   const css = fs.readFileSync(skin.cssFile, "utf8");
   const report = core.validateCss(css, { dir: skin.dir, assetsDir: skin.assets });
   if (!report.ok) {
-    console.error(`${C.red}拒绝打包${C.off}：${skin.id} 有 ${report.errors} 个 error，先跑 dsh-skin validate`);
+    console.error(`${C.red}拒绝打包${C.off}：${skin.id} 有 ${report.errors} 个 error，先跑 css-guard validate`);
     process.exitCode = 1;
     return;
   }
-  const out = opts.out || `${skin.id}.dsh-skin.zip`;
+  const out = opts.out || `${skin.id}.css-guard.zip`;
   // 包内带一层皮肤 id 目录：解压出来就是一套能直接放进 skins/ 的皮肤。
   const entries = filesUnder(target).map((f) => ({ name: `${skin.id}/${f.name}`, data: f.data }));
   fs.writeFileSync(out, zipSync(entries));
@@ -198,7 +198,7 @@ function cmdPack(target, opts) {
 
 /* ── 救援 ──────────────────────────────────────────────────────────────
    这几条命令存在的唯一理由：程序打不开的时候，用户和他的 agent 还得有路可走。
-   所以它们不 require electron、不需要程序在运行，只读写 ~/.dsh-skin。 */
+   所以它们不 require electron、不需要程序在运行，只读写 ~/.css-guard。 */
 
 const LEVEL_MARK = { ok: `${C.green}✓${C.off}`, warn: `${C.yellow}!${C.off}`, error: `${C.red}✗${C.off}` };
 
@@ -229,13 +229,13 @@ function cmdDoctor(opts) {
 function cmdHistory(opts) {
   const points = core.history.list();
   if (opts.json) { console.log(JSON.stringify(points, null, 2)); return; }
-  if (!points.length) { console.log("还没有还原点。做任何改动时会自动存，也可以 dsh-skin snapshot 手动存。"); return; }
+  if (!points.length) { console.log("还没有还原点。做任何改动时会自动存，也可以 css-guard snapshot 手动存。"); return; }
   for (const p of points) {
     const mark = p.broken ? `${C.red}✗${C.off}` : " ";
     console.log(`  ${mark} ${p.id}`);
     console.log(`      ${p.label}${C.dim} · ${p.at || "时间未知"} · ${p.skins} 套皮肤${C.off}`);
   }
-  console.log(`\n${points.length} 个。回退：dsh-skin undo [id]`);
+  console.log(`\n${points.length} 个。回退：css-guard undo [id]`);
 }
 
 function cmdUndo(id, opts) {
@@ -258,7 +258,7 @@ function cmdUndo(id, opts) {
       console.log(`\n  ${C.yellow}注意${C.off}：${dry.missingAssets.length} 张素材图当时在、现在不在了。还原点只存文字，图找不回来。`);
     }
     if (dry.kept.length) console.log(`\n  那之后新增的会原样保留（恢复不删东西）：${dry.kept.join("、")}`);
-    console.log(`\n这只是预演。真的执行：${C.green}dsh-skin undo ${target} --yes${C.off}`);
+    console.log(`\n这只是预演。真的执行：${C.green}css-guard undo ${target} --yes${C.off}`);
     return;
   }
 
@@ -268,7 +268,7 @@ function cmdUndo(id, opts) {
   if (opts.json) { console.log(JSON.stringify(result, null, 2)); return; }
   if (!result.ok) { console.error(result.error); process.exitCode = 1; return; }
   console.log(`${C.green}✓${C.off} 已恢复到「${result.label}」，改了 ${result.changes.length} 处。`);
-  console.log(`${C.dim}回退之前的样子也存下来了，反悔就再 dsh-skin history 看一眼。${C.off}`);
+  console.log(`${C.dim}回退之前的样子也存下来了，反悔就再 css-guard history 看一眼。${C.off}`);
 }
 
 function cmdSnapshot(opts) {
@@ -287,7 +287,7 @@ function cmdSafeMode(action, opts) {
   if (action === "on" || action === "off") {
     core.home.setSafeMode(action === "on", "命令行");
   } else if (action && action !== "status") {
-    console.error("用法：dsh-skin safe-mode on|off|status");
+    console.error("用法：css-guard safe-mode on|off|status");
     process.exitCode = 2;
     return;
   }
@@ -296,7 +296,7 @@ function cmdSafeMode(action, opts) {
   if (info) {
     console.log(`安全模式${C.yellow}开${C.off} —— 程序启动时不会套任何皮肤，也不轮播。`);
     console.log(`${C.dim}原因：${info.reason}${info.at ? `（${info.at}）` : ""}${C.off}`);
-    console.log(`${C.dim}你的皮肤都还在。确认问题解决后：dsh-skin safe-mode off${C.off}`);
+    console.log(`${C.dim}你的皮肤都还在。确认问题解决后：css-guard safe-mode off${C.off}`);
   } else {
     console.log(`安全模式${C.green}关${C.off} —— 正常套用皮肤。`);
   }

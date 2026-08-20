@@ -1,4 +1,4 @@
-# @dsh-skin/core
+# css-guard
 
 The skin engine: manifest parsing, library scanning, and the linter.
 
@@ -9,7 +9,7 @@ CI to install a full Electron just to lint a stylesheet.
 零依赖，不 import Electron —— 同一套规则要能跑在 CI、命令行、Electron 主进程和任何别的宿主里。
 
 ```js
-const { validateCss, scanLibrary, resolveCss } = require("@dsh-skin/core");
+const { validateCss, scanLibrary, resolveCss } = require("css-guard");
 
 const report = validateCss(css, { dir: skinDir });
 // { ok, errors, warnings, findings: [{ rule, severity, message, why, line, snippet }] }

@@ -1,0 +1,165 @@
+<!doctype html>
+<html lang="en">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>css-guard — a stylesheet can read what your users type</title>
+<meta name="description" content="A live demonstration: plain CSS, no JavaScript, exfiltrating attribute values one character at a time. Then the linter that blocks it.">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><text y='26' font-size='26'>🛡️</text></svg>">
+<link rel="stylesheet" href="demo.css">
+
+<header class="top">
+  <div class="wrap">
+    <h1>A stylesheet can read what your users type.</h1>
+    <p class="lede">
+      No JavaScript. No permission prompt. Nothing visible on screen.
+      The requests below are <b>real</b> — your browser is making them right now. Open your network
+      tab, filter for <code>collect</code>, and watch an API key leave one character at a time.
+    </p>
+    <div class="cta">
+      <a class="btn primary" href="#try">See it happen</a>
+      <a class="btn" href="https://github.com/LinzOpen/css-guard">GitHub</a>
+      <code class="install">npm i css-guard</code>
+    </div>
+  </div>
+</header>
+
+<main class="wrap">
+
+<section id="try" class="stage">
+  <div class="panel">
+    <div class="panel-head">
+      <h2>An ordinary page</h2>
+      <span class="hint">Nothing here is unusual. A form, a hidden CSRF token, a profile row.</span>
+    </div>
+
+    <form class="fake" onsubmit="return false">
+      <label>Email
+        <input id="email" type="email" value="alice@example.com" autocomplete="off" spellcheck="false">
+      </label>
+      <label>API key
+        <input id="apikey" type="text" value="sk-live-7f3a" autocomplete="off" spellcheck="false">
+      </label>
+      <!-- 服务端渲染的 CSRF token。用 sr-only（视觉隐藏但仍在渲染树里）而不是
+           type=hidden —— type=hidden 不渲染，就不需要背景图，也就偷不到。
+           这本身就是一条真实的经验：纯 CSS 偷不了 display:none 的东西，
+           但偷得了任何"视觉上藏起来、渲染上还在"的东西，而后者在真实页面里到处都是。 -->
+      <input id="csrf" class="sr-only" name="csrf" value="c8d41f" readonly tabindex="-1" aria-hidden="true">
+      <div class="profile" data-user="alice@example.com">
+        <span class="avatar">A</span>
+        <span>Alice · <span class="muted">Owner</span></span>
+      </div>
+      <button class="btn primary" type="submit">Save</button>
+    </form>
+
+    <div class="row">
+      <label class="switch">
+        <input type="checkbox" id="toggle" disabled>
+        <span>Apply the theme</span>
+      </label>
+      <span class="hint" id="state">theme off</span>
+    </div>
+  </div>
+
+  <div class="panel dark">
+    <div class="panel-head">
+      <h2>What the attacker's server received</h2>
+      <span class="hint">Reconstructed from the requests the stylesheet made.</span>
+    </div>
+    <div class="stolen">
+      <div class="field big"><span class="k">apikey</span><span class="v" id="out-apikey">—</span></div>
+    </div>
+    <p class="hint" style="margin:2px 0 14px">
+      Watch it arrive character by character. This demo streams one field to stay light;
+      the same stylesheet reads <code>email</code>, the hidden <code>csrf</code> token and the
+      <code>data-user</code> attribute by exactly the same trick.
+    </p>
+    <div class="log-head">request log <span class="hint" id="count">0 requests</span></div>
+    <pre class="log" id="log">Turn the theme on.</pre>
+  </div>
+</section>
+
+<section class="explain">
+  <h2>The whole attack is this</h2>
+  <pre class="code"><code>input#apikey[value^="s"]  { background-image: url(collect/?apikey=s); }
+input#apikey[value^="k"]  { background-image: url(collect/?apikey=k); }
+input#apikey[value^="sk"] { background-image: url(collect/?apikey=sk); }
+<span class="dim">… one rule per prefix, for every character you care about</span></code></pre>
+  <p>
+    An attribute selector matches on the value that is <em>there</em>. A match paints a background.
+    Painting a background makes a request. Nothing else is required — and there is no CSS feature you
+    can turn off to stop it, because every part of it is CSS working exactly as designed.
+  </p>
+  <p class="note">
+    <b>Being precise about scope, because it matters:</b> this reads <em>attribute</em> values, not the
+    live <code>.value</code> property. That still covers server-rendered fields, hidden CSRF tokens,
+    <code>data-*</code> attributes, <code>title</code>, <code>href</code>, and any framework or password
+    manager that mirrors input into the attribute — React and Vue both do, in common configurations.
+    The <em>API key</em> field above has a checkbox to mirror as you type, so you can watch it stream;
+    the other three leak with no help at all.
+  </p>
+  <p class="note">
+    One honest limit, visible in this very demo: a browser only fetches a background image when the
+    element is <em>actually painted</em>. Off-screen or <code>display:none</code> elements are safe.
+    A real attacker sidesteps this by hanging the selectors on things that are always painted —
+    <code>html</code>, <code>body</code>, a toolbar — which is why the panel scrolls into view when
+    you turn the theme on. css-guard blocks the stylesheet either way; the network request is the
+    payload, and it is refused before it can exist.
+  </p>
+  <label class="switch">
+    <input type="checkbox" id="mirror">
+    <span>Mirror what I type into the attribute (what a framework does)</span>
+  </label>
+</section>
+
+<section class="guard">
+  <h2>Now run the linter on that stylesheet</h2>
+  <div class="row">
+    <button class="btn primary" id="check">Run css-guard</button>
+    <span class="hint">10 KB, no dependencies, no network. <a href="css-guard.js">Read the whole thing</a>.</span>
+  </div>
+  <div id="verdict" class="verdict" hidden></div>
+</section>
+
+<section class="use">
+  <h2>Use it</h2>
+  <div class="cols">
+    <div>
+      <h3>Before you inject anything</h3>
+      <pre class="code"><code>import { validateCss } from "css-guard";
+
+const report = validateCss(userStylesheet);
+if (!report.ok) {
+  return refuse(report.findings);   <span class="dim">// rule, line, and why</span>
+}
+inject(userStylesheet);</code></pre>
+      <p>Works in the browser, in Node, in a worker, in an extension. It never touches the network
+         and never reads a file unless you hand it a directory.</p>
+    </div>
+    <div>
+      <h3>In CI</h3>
+      <pre class="code"><code>npx @css-guard/cli validate themes/
+<span class="dim"># exit code 1 on any error — that is the gate</span></code></pre>
+      <h3>In an Electron app</h3>
+      <pre class="code"><code>import { createSkinHost } from "@css-guard/electron";
+<span class="dim">// registers a protocol, serialises insertCSS,
+// and refuses anything the linter rejects</span></code></pre>
+    </div>
+  </div>
+</section>
+
+<footer class="wrap foot">
+  <p>
+    <a href="https://github.com/LinzOpen/css-guard">github.com/LinzOpen/css-guard</a> ·
+    MIT · <a href="https://github.com/LinzOpen/css-guard/blob/main/README.zh-CN.md">简体中文</a>
+  </p>
+  <p class="hint">
+    This page makes real requests to <code>collect/</code> on this same domain. They 404. Nothing is
+    sent anywhere, and there is no analytics on this page.
+  </p>
+</footer>
+
+</main>
+
+<script src="css-guard.js"></script>
+<script src="demo.js"></script>
+</html>

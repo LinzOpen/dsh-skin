@@ -1,8 +1,8 @@
 /**
  * DSH 插件入口（宿主那半）。
  *
- * 它只做一件事：把一个 dsh-skin 皮肤库通过本地 http 端口暴露给 DSH 的渲染进程，
- * 并跟着宿主一起启动、一起关闭。皮肤的检查、编译、素材解析全在 @dsh-skin/core
+ * 它只做一件事：把一个 css-guard 皮肤库通过本地 http 端口暴露给 DSH 的渲染进程，
+ * 并跟着宿主一起启动、一起关闭。皮肤的检查、编译、素材解析全在 css-guard
  * 和 ./server.js 里，这个文件不重复实现任何一条规则。
  */
 
@@ -11,25 +11,25 @@ import { join } from "node:path";
 import { existsSync } from "node:fs";
 import { createAssetServer } from "./server.js";
 
-const name = "dsh-skin-adapter";
+const name = "dsh-css-guard";
 const inject = [];
 
 /** 皮肤根，顺序即优先级：用户目录里的同 id 皮肤覆盖仓库自带的。 */
 function defaultRoots() {
   const roots = [];
-  if (process.env.DSH_SKIN_BUILTIN) roots.push(process.env.DSH_SKIN_BUILTIN);
-  roots.push(join(homedir(), ".dsh-skin", "skins"));
+  if (process.env.CSS_GUARD_BUILTIN) roots.push(process.env.CSS_GUARD_BUILTIN);
+  roots.push(join(homedir(), ".css-guard", "skins"));
   return roots.filter(Boolean);
 }
 
 function apply(ctx) {
-  const log = (message) => ctx?.logger?.("dsh-skin")?.info?.(message);
+  const log = (message) => ctx?.logger?.("css-guard")?.info?.(message);
   const roots = defaultRoots();
   if (!roots.some(existsSync)) {
     log(`皮肤目录都不存在，插件空转：${roots.join(" / ")}`);
     return;
   }
-  const port = Number(process.env.DSH_SKIN_PORT || 3099);
+  const port = Number(process.env.CSS_GUARD_PORT || 3099);
   const api = createAssetServer({ roots, port });
 
   api.server.on("error", (error) => {

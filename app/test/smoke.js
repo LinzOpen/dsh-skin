@@ -9,15 +9,15 @@
  *
  *     npx electron app/test/smoke.js
  *
- * 全程不碰用户真实的 ~/.dsh-skin —— 开头把 DSH_SKIN_HOME 指到一个临时目录。
+ * 全程不碰用户真实的 ~/.css-guard —— 开头把 CSS_GUARD_HOME 指到一个临时目录。
  */
 const fs = require("node:fs");
 const os = require("node:os");
 const path = require("node:path");
 
-const SANDBOX = fs.mkdtempSync(path.join(os.tmpdir(), "dsh-skin-smoke-"));
-process.env.DSH_SKIN_HOME = SANDBOX;
-process.env.DSH_SKIN_HEADLESS = "1";
+const SANDBOX = fs.mkdtempSync(path.join(os.tmpdir(), "css-guard-smoke-"));
+process.env.CSS_GUARD_HOME = SANDBOX;
+process.env.CSS_GUARD_HEADLESS = "1";
 
 // 一套两张背景的皮肤，用来验证「换下一张背景」在**关闭轮播时**也管用。
 const multi = path.join(SANDBOX, "skins", "multi-backdrop");
@@ -29,7 +29,7 @@ for (const name of ["a.svg", "b.svg"]) {
 fs.writeFileSync(path.join(multi, "skin.json"), JSON.stringify({
   name: "两张背景", backdrops: ["assets/a.svg", "assets/b.svg"] }));
 fs.writeFileSync(path.join(multi, "skin.css"),
-  ':root{--color-bg:#000;--color-text:#fff;--color-accent:#0af;}\n#app{background-image:var(--dsh-backdrop);}\n');
+  ':root{--color-bg:#000;--color-text:#fff;--color-accent:#0af;}\n#app{background-image:var(--skin-backdrop);}\n');
 
 // 素材名里带 # 和空格 —— encodeURI 不转义 #，从 # 起会被当成 URL 片段。
 const odd = path.join(SANDBOX, "skins", "odd-names");
@@ -81,7 +81,7 @@ app.whenReady().then(async () => {
     if (!win) throw new Error("没有窗口");
     const wc = win.webContents;
     if (wc.isLoading()) await new Promise((r) => wc.once("did-finish-load", r));
-    check("加载的是自定义协议地址", wc.getURL().startsWith("dshskin://app/"), wc.getURL());
+    check("加载的是自定义协议地址", wc.getURL().startsWith("cssguard://app/"), wc.getURL());
 
     /* 1. 皮肤库扫出来了，内置 6 套 + 沙盒里那套坏的 */
     const count = await until(wc, "document.querySelectorAll('.skin').length");
@@ -90,7 +90,7 @@ app.whenReady().then(async () => {
     /* 2. 皮肤 CSS 真的进了预览 iframe，且算出来的值变了 */
     const injected = await until(wc, `(() => {
       const d = document.getElementById('frame').contentDocument;
-      const s = d && d.getElementById('dsh-skin-preview');
+      const s = d && d.getElementById('css-guard-preview');
       if (!s || !s.textContent.trim()) return null;
       const cs = getComputedStyle(d.documentElement);
       return { bytes: s.textContent.length,
@@ -102,11 +102,11 @@ app.whenReady().then(async () => {
     check("挂载点铺上了背景", Boolean(injected && injected.mountBg && injected.mountBg !== "none"), injected?.mountBg || "");
 
     /* 3. 自定义协议真的能取到皮肤文件 */
-    const good = await net.fetch("dshskin://skin/midnight-harbor/skin.css");
-    check("dshskin:// 能取到皮肤素材", good.status === 200, `HTTP ${good.status}`);
-    const escape = await net.fetch("dshskin://skin/midnight-harbor/../../../../etc/passwd");
+    const good = await net.fetch("cssguard://skin/midnight-harbor/skin.css");
+    check("cssguard:// 能取到皮肤素材", good.status === 200, `HTTP ${good.status}`);
+    const escape = await net.fetch("cssguard://skin/midnight-harbor/../../../../etc/passwd");
     check("路径穿越被挡住", escape.status !== 200, `HTTP ${escape.status}`);
-    const ghost = await net.fetch("dshskin://skin/no-such-skin/skin.css");
+    const ghost = await net.fetch("cssguard://skin/no-such-skin/skin.css");
     check("不存在的皮肤返回 404", ghost.status === 404, `HTTP ${ghost.status}`);
 
     /* 4. 带远程 URL 的皮肤拿不到可套用的 CSS —— 拦截是真的 */
@@ -159,12 +159,12 @@ app.whenReady().then(async () => {
     check("关闭轮播时也能手动换下一张背景", advanced && first !== second, `${first} -> ${second}`);
 
     /* 7. 回归：素材名里的 # 不能把路径截断。 */
-    const hashed = await net.fetch(`dshskin://skin/odd-names/${encodeURIComponent("a #1 b.svg")}`);
+    const hashed = await net.fetch(`cssguard://skin/odd-names/${encodeURIComponent("a #1 b.svg")}`);
     check("素材名里带 # 和空格也取得到", hashed.status === 200, `HTTP ${hashed.status}`);
 
     /* 8. 崩溃循环断路器：连续两次没走到界面就自动进安全模式。 */
     const recovery = require("../src/main/recovery");
-    const { home } = require("@dsh-skin/core");
+    const { home } = require("css-guard");
     home.setSafeMode(false, undefined);
     fs.writeFileSync(home.paths().bootLock, JSON.stringify({ at: "x", fails: 1 }));
     const trip = recovery.beginBoot();
@@ -174,10 +174,10 @@ app.whenReady().then(async () => {
     home.setSafeMode(false, undefined);
 
     /* 9. 还原点是自动存的 —— 用户不需要记得，agent 也不需要。 */
-    const before = require("@dsh-skin/core").history.list().length;
+    const before = require("css-guard").history.list().length;
     await new Promise((r) => setTimeout(r, 1100));   // 还原点 id 带时间戳，同秒会撞名
     recovery.checkpoint("smoke", "冒烟测试存的");
-    check("改动前会自动存还原点", require("@dsh-skin/core").history.list().length === before + 1);
+    check("改动前会自动存还原点", require("css-guard").history.list().length === before + 1);
 
     /* 10. 零终端逃生：急救文件必须真的写出来、真的可执行、且路径真的能跑。
            这是给"程序打不开 + 不会用终端 + 没装 Node"那类用户的唯一出路，
@@ -199,7 +199,7 @@ app.whenReady().then(async () => {
       let out = "";
       try { out = String(execFileSync("/bin/sh", [first], { input: "\n", timeout: 60000 })); }
       catch (error) { out = String(error.stdout || "") + String(error.stderr || ""); }
-      check("双击急救脚本真的能跑出体检结果", out.includes("dsh-skin 体检"), out.split("\n")[0] || "(没有输出)");
+      check("双击急救脚本真的能跑出体检结果", out.includes("css-guard 体检"), out.split("\n")[0] || "(没有输出)");
     }
   } catch (error) {
     check("测试跑完", false, error.message);

@@ -1,6 +1,6 @@
 "use strict";
 /**
- * @dsh-skin/host 的端到端测试。跑在真的 Electron 里，因为这个包做的三件事
+ * @css-guard/electron 的端到端测试。跑在真的 Electron 里，因为这个包做的三件事
  * （协议注册时机、insertCSS 串行、注入前拦截）离开 Electron 一件都验不了。
  *
  *     npx electron packages/host/test/smoke.js

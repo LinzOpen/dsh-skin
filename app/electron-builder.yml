@@ -1,12 +1,12 @@
-appId: io.github.linzopen.dsh-skin
-productName: dsh-skin
+appId: io.github.linzopen.css-guard
+productName: css-guard
 copyright: MIT licensed
 directories:
   buildResources: build
   output: ../dist
 
-# 产物名统一写死。不写的话 Linux 会拿 package.json 的 name（@dsh-skin/app）去拼，
-# 打出 "@dsh-skin/app-0.1.0.tar.gz" 这种带斜杠的名字。
+# 产物名统一写死。不写的话 Linux 会拿 package.json 的 name（@css-guard/app）去拼，
+# 打出 "@css-guard/app-0.1.0.tar.gz" 这种带斜杠的名字。
 artifactName: ${productName}-${version}-${os}-${arch}.${ext}
 
 # app.asar 里只放程序自己的代码。皮肤放在 asar 外面（extraResources），
@@ -43,23 +43,23 @@ win:
     - target: zip
       arch: [x64]
 nsis:
-  # 名字里必须有 Setup。全局模板会打出 dsh-skin-0.1.0-win-x64.exe，
+  # 名字里必须有 Setup。全局模板会打出 css-guard-0.1.0-win-x64.exe，
   # 而同目录还有一个便携版 .zip —— 一个不懂技术的人分不出哪个是"装的那个"。
   # Setup 是 Windows 上人人认得的词，这一个词省掉的求助比任何文档都多。
   artifactName: ${productName}-Setup-${version}-${arch}.${ext}
   oneClick: false
   perMachine: false
   allowToChangeInstallationDirectory: true
-  # 便携版和安装版共用同一个 ~/.dsh-skin，卸载时不删用户自己的皮肤。
+  # 便携版和安装版共用同一个 ~/.css-guard，卸载时不删用户自己的皮肤。
   deleteAppDataOnUninstall: false
 
 linux:
   category: Utility
   # 必须显式写。Linux 的 executableName 默认取 package.json 的 name，
-  # 而这里是 "@dsh-skin/app" —— 清洗成 "@dsh-skinapp" 之后仍然带 @，
+  # 而这里是 "@css-guard/app" —— 清洗成 "@css-guardapp" 之后仍然带 @，
   # AppImage 直接拒绝构建。这条只在 Linux 上炸，macOS 用的是 productName，
   # 所以本机永远发现不了 —— 是在 Docker 里跑打包才暴露的。
-  executableName: dsh-skin
+  executableName: css-guard
   synopsis: 给 Electron 应用和网页界面换皮肤
   description: 皮肤工作室、可换肤外壳，以及一个会拒绝危险皮肤的检查器。
   target:

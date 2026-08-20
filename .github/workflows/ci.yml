@@ -39,7 +39,7 @@ jobs:
         run: npm test
 
       - name: DSH adapter server tests
-        run: node --test adapters/dsh-plugin/test/*.test.js
+        run: node --test adapters/dsh/test/*.test.js
 
       # 皮肤检查器对着仓库自带的皮肤跑一遍。有 error 就是退出码 1。
       - name: Validate bundled skins

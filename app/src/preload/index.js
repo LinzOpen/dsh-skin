@@ -7,7 +7,7 @@
  */
 const { contextBridge, ipcRenderer } = require("electron");
 
-contextBridge.exposeInMainWorld("dshSkin", {
+contextBridge.exposeInMainWorld("cssGuard", {
   state: {
     read: () => ipcRenderer.invoke("state:read"),
     patch: (delta) => ipcRenderer.invoke("state:patch", delta),
@@ -29,7 +29,7 @@ contextBridge.exposeInMainWorld("dshSkin", {
     forget: (url) => ipcRenderer.invoke("shell:forget", url),
   },
   /** 救援。程序还开得起来时走这里；开不起来时同样的能力在命令行的
-   *  dsh-skin doctor / undo / safe-mode 里，读写的是同一批文件。 */
+   *  css-guard doctor / undo / safe-mode 里，读写的是同一批文件。 */
   recovery: {
     status: () => ipcRenderer.invoke("recovery:status"),
     history: () => ipcRenderer.invoke("recovery:history"),

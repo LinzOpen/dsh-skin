@@ -47,7 +47,7 @@ function uniqueDir(id) {
 function skinCss(name, hasMultiple) {
   return `/* ${name} — 由「导入素材」生成
  *
- * 背景走 --dsh-backdrop 变量，${hasMultiple ? "宿主在轮播时只改这一个变量（重注整段样式会闪）" : "宿主套用时填入这套皮肤唯一的那张图"}。
+ * 背景走 --skin-backdrop 变量，${hasMultiple ? "宿主在轮播时只改这一个变量（重注整段样式会闪）" : "宿主套用时填入这套皮肤唯一的那张图"}。
  * 改配色请直接改下面的变量；换图请把文件丢进 assets/ 并改 skin.json 的 backdrops。
  */
 
@@ -57,20 +57,20 @@ function skinCss(name, hasMultiple) {
   --color-accent: #7f9bff;
 
   /* 遮罩强度：0 = 完全不遮（图好看但字可能读不清），1 = 压死（字清楚但等于没换皮肤） */
-  --dsh-veil: .72;
+  --skin-veil: .72;
 }
 
 #app, #root {
   background-color: var(--color-bg);
   background-image:
     linear-gradient(to right,
-      rgba(10, 14, 24, calc(var(--dsh-veil) * .92)) 0%,
-      rgba(10, 14, 24, calc(var(--dsh-veil) * .78)) 11%,
+      rgba(10, 14, 24, calc(var(--skin-veil) * .92)) 0%,
+      rgba(10, 14, 24, calc(var(--skin-veil) * .78)) 11%,
       rgba(10, 14, 24, 0) 17%,
       rgba(10, 14, 24, 0) 30%,
-      rgba(10, 14, 24, calc(var(--dsh-veil) * .95)) 40%,
-      rgba(10, 14, 24, var(--dsh-veil)) 100%),
-    var(--dsh-backdrop, none);
+      rgba(10, 14, 24, calc(var(--skin-veil) * .95)) 40%,
+      rgba(10, 14, 24, var(--skin-veil)) 100%),
+    var(--skin-backdrop, none);
   background-size: cover;
   background-position: center center;
   background-repeat: no-repeat;

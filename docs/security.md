@@ -57,10 +57,10 @@ Not in the UI. Every consumer runs the linter before the CSS becomes injectable:
 - **The app** — `skins.compile()` returns `null` instead of CSS. There is no "apply anyway" button.
   A skin with an error still renders in the studio preview, because an author has to see what they
   are fixing; what is refused is *injecting it into someone else's interface*.
-- **`@dsh-skin/host`** — `apply()` resolves `{ ok: false, error }` and inserts nothing.
+- **`@css-guard/electron`** — `apply()` resolves `{ ok: false, error }` and inserts nothing.
 - **The DSH adapter** — the local asset server answers `409` with the findings in the response body,
   so a stale browser-side picker cannot route around it.
-- **CI** — `dsh-skin validate` exits 1.
+- **CI** — `css-guard validate` exits 1.
 
 ## What this does not protect against · 它挡不住的
 
@@ -69,7 +69,7 @@ Be clear about the boundary:
 - **Ugly is not unsafe.** The linter has no opinion about whether a skin is readable.
 - **Local assets are trusted.** A skin can ship any image it likes; nothing scans image contents.
 - **The host is still the host.** If the application you are skinning is compromised, a skin cannot
-  save you — and `dsh-skin` never injects scripts, so it cannot make that worse either.
+  save you — and `css-guard` never injects scripts, so it cannot make that worse either.
 - **`bypassCSP`.** The custom protocol is registered with `bypassCSP: true`, which is what lets a
   skin's images load into a page that has its own strict CSP. The handler only serves files that
   resolve inside a known skin directory (symlinks followed, `..` rejected), but a page loaded in a

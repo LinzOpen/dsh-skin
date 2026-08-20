@@ -32,7 +32,7 @@ body:
       options:
         - label: 我有权公开这套皮肤里的每一份素材（不是从壁纸站/同人站拿的官方立绘或他人画作）
           required: true
-        - label: "`npx @dsh-skin/cli validate` 零 error"
+        - label: "`npx @css-guard/cli validate` 零 error"
           required: true
   - type: textarea
     id: shots

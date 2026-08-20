@@ -90,7 +90,7 @@ jobs:
             下载对应平台的包。**这些包没有代码签名**（这个项目背后没有付费证书），第一次打开需要手动放行：
 
             - **macOS** — 右键点应用 → *打开* → *打开*。还是不行就跑
-              `xattr -dr com.apple.quarantine "/Applications/dsh-skin.app"`
+              `xattr -dr com.apple.quarantine "/Applications/css-guard.app"`
             - **Windows** — SmartScreen 弹「已保护你的电脑」→ *更多信息* → *仍要运行*
 
             ---
