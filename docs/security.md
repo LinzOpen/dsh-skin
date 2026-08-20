@@ -57,7 +57,7 @@ Not in the UI. Every consumer runs the linter before the CSS becomes injectable:
 - **The app** — `skins.compile()` returns `null` instead of CSS. There is no "apply anyway" button.
   A skin with an error still renders in the studio preview, because an author has to see what they
   are fixing; what is refused is *injecting it into someone else's interface*.
-- **`@css-guard/electron`** — `apply()` resolves `{ ok: false, error }` and inserts nothing.
+- **`css-guard-electron`** — `apply()` resolves `{ ok: false, error }` and inserts nothing.
 - **The DSH adapter** — the local asset server answers `409` with the findings in the response body,
   so a stale browser-side picker cannot route around it.
 - **CI** — `css-guard validate` exits 1.

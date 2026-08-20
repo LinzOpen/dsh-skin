@@ -1,13 +1,13 @@
-# @css-guard/electron
+# css-guard-electron
 
 Make an Electron window skinnable.
 
 ```bash
-npm install @css-guard/electron
+npm install css-guard-electron
 ```
 
 ```js
-const { registerSkinScheme, createSkinHost } = require("@css-guard/electron");
+const { registerSkinScheme, createSkinHost } = require("css-guard-electron");
 
 registerSkinScheme();                                  // 必须在 app ready 之前
 

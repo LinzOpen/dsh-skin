@@ -14,8 +14,8 @@ Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Versions follo
 - **`css-guard`** — 皮肤清单解析、皮肤库扫描，以及带行号的检查器：5 条安全规则
   （远程 URL / 远程 @import / 远程字体 / 脚本注入 / 旧式行为绑定）和 4 条稳定性规则
   （永动动画 / 编译产物类名 / 属性值选择器 / 核心变量缺失）。零依赖，不碰 Electron。
-- **`@css-guard/electron`** — Electron 接入 SDK：自定义协议、串行化 `insertCSS`、注入前拦截。
-- **`@css-guard/cli`** — `validate` / `list` / `new` / `pack`。`validate` 有 error 时退出码 1，
+- **`css-guard-electron`** — Electron 接入 SDK：自定义协议、串行化 `insertCSS`、注入前拦截。
+- **`css-guard-cli`** — `validate` / `list` / `new` / `pack`。`validate` 有 error 时退出码 1，
   可直接当 CI 闸门。`pack` 用零依赖的 ZIP 编码器，输出可复现。
 - **桌面程序** —「工作室」在内置沙盒里实时预览、跑检查、新建皮肤、把本地图片导入成皮肤；
   「外壳」把任意网址装进一个带皮肤的窗口。macOS / Windows / Linux。

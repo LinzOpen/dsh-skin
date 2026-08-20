@@ -1,11 +1,29 @@
 {
-  "name": "@css-guard/cli",
+  "name": "css-guard-cli",
   "version": "0.1.0",
   "description": "Validate, scaffold and package css-guard skins from the command line.",
   "license": "MIT",
-  "bin": { "css-guard": "bin/css-guard.js" },
+  "bin": {
+    "css-guard": "bin/css-guard.js"
+  },
   "main": "bin/css-guard.js",
-  "files": ["bin", "README.md"],
-  "dependencies": { "css-guard": "0.1.0" },
-  "engines": { "node": ">=20" }
+  "files": [
+    "bin",
+    "README.md"
+  ],
+  "dependencies": {
+    "css-guard": "0.1.0"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/LinzOpen/dsh-skin.git",
+    "directory": "packages/cli"
+  },
+  "homepage": "https://github.com/LinzOpen/dsh-skin#readme",
+  "bugs": {
+    "url": "https://github.com/LinzOpen/dsh-skin/issues"
+  }
 }

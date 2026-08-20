@@ -34,5 +34,14 @@
   "engines": {
     "node": ">=20"
   },
-  "browser": "./src/browser.js"
+  "browser": "./src/browser.js",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/LinzOpen/dsh-skin.git",
+    "directory": "packages/core"
+  },
+  "homepage": "https://github.com/LinzOpen/dsh-skin#readme",
+  "bugs": {
+    "url": "https://github.com/LinzOpen/dsh-skin/issues"
+  }
 }

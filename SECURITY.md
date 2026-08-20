@@ -29,7 +29,7 @@ See [docs/security.md](docs/security.md) for why that is the line.
 Use **GitHub → Security → Report a vulnerability** (private advisory) on this repository.
 
 Please include the smallest stylesheet that demonstrates the problem and which consumer you used
-(app, `@css-guard/electron`, the DSH adapter, or the CLI). Don't open a public issue containing a working
+(app, `css-guard-electron`, the DSH adapter, or the CLI). Don't open a public issue containing a working
 exfiltration payload before there's a fix.
 
 请用仓库的 **Security → Report a vulnerability** 私下报告，附上能复现的最小样式表和你用的是哪个消费方。

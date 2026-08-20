@@ -1,9 +1,9 @@
 "use strict";
 /**
- * @css-guard/electron —— 让一个 Electron 窗口能换皮肤。
+ * css-guard-electron —— 让一个 Electron 窗口能换皮肤。
  *
  *   // main.js，app ready 之前
- *   const { registerSkinScheme, createSkinHost } = require("@css-guard/electron");
+ *   const { registerSkinScheme, createSkinHost } = require("css-guard-electron");
  *   registerSkinScheme();
  *
  *   // ready 之后

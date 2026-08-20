@@ -9,14 +9,14 @@ Three integration paths, in order of how much control you have over the host.
 ## 1 · You own the Electron app · 你自己的 Electron 应用
 
 ```bash
-npm install @css-guard/electron
+npm install css-guard-electron
 ```
 
 ```js
 // main.js
 const path = require("node:path");
 const { app, BrowserWindow } = require("electron");
-const { registerSkinScheme, createSkinHost } = require("@css-guard/electron");
+const { registerSkinScheme, createSkinHost } = require("css-guard-electron");
 
 // 必须在 app ready 之前。晚一步不会报错，只会所有素材 404 —— 这个 bug 很难查。
 registerSkinScheme();

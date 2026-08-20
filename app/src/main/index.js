@@ -29,7 +29,7 @@ proto.registerScheme();
 /* ── 急救模式 ──────────────────────────────────────────────────────────
    用户从 ~/.css-guard/急救/ 里双击进来的。做完打印、立刻退出，不开任何窗口。
    为什么要在程序里做而不是让脚本去调命令行：一个不写代码的用户机器上多半没有
-   Node，`npx @css-guard/cli` 跑不起来。而这个程序本身就是他已经装好的运行时。 */
+   Node，`npx css-guard-cli` 跑不起来。而这个程序本身就是他已经装好的运行时。 */
 const RECOVERY_FLAG = "--recovery=";
 const recoveryArg = process.argv.find((a) => a.startsWith(RECOVERY_FLAG));
 if (recoveryArg) {
