@@ -188,6 +188,23 @@ app.whenReady().then(async () => {
     const appDir = path.join(__dirname, "..");
     const written = rescue.write(process.execPath, [appDir]);
     check("急救文件写出来了", written.ok, written.dir || written.error);
+
+    /* 11. 回归：设了 hidden 属性的元素必须真的不显示。
+           .banner / .rotate-bar 有自定义 display:flex，会覆盖 [hidden] 的
+           默认 display:none —— 表现是"横幅设了 hidden 却还在界面上占一条"。 */
+    const win2 = BrowserWindow.getAllWindows()[0];
+    if (win2 && !win2.isDestroyed()) {
+      const hiddenWorks = await win2.webContents.executeJavaScript(`(() => {
+        const check = (id) => {
+          const el = document.getElementById(id);
+          if (!el) return "missing:" + id;
+          el.hidden = true;
+          return getComputedStyle(el).display === "none" ? "ok" : ("visible:" + id);
+        };
+        return [check("banner"), check("rotate-bar")].join(",");
+      })()`);
+      check("设了 hidden 的横幅/轮播条真的不显示", hiddenWorks === "ok,ok", hiddenWorks);
+    }
     if (written.ok) {
       const names = fs.readdirSync(written.dir);
       check("五个急救动作 + 一份说明都在", names.length === rescue.SCRIPTS.length + 1, names.join("、"));

@@ -49,7 +49,17 @@
   <section class="pane" id="preview-pane">
     <header>
       <span class="grow">实时预览 · 内置沙盒（不需要装任何别的软件）</span>
-      <button class="ghost" id="next" hidden>换下一张背景</button>
+      <div class="rotate-bar" id="rotate-bar" hidden>
+        <button class="ghost" id="mode-single" title="固定显示当前这张">单张</button>
+        <button class="ghost" id="mode-rotate" title="在这套皮肤的多张背景间自动轮换">轮播</button>
+        <select id="interval" title="每隔多久换一张">
+          <option value="15">15 分钟</option>
+          <option value="60" selected>1 小时</option>
+          <option value="240">4 小时</option>
+          <option value="1440">24 小时</option>
+        </select>
+        <button class="ghost" id="next">换下一张</button>
+      </div>
     </header>
     <div class="stage"><div class="frame"><iframe id="frame" src="sandbox.html" title="预览"></iframe></div></div>
   </section>

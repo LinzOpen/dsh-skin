@@ -170,6 +170,9 @@ input { font: inherit; color: inherit; }
 .toast[data-show="1"] { opacity: 1; }
 
 /* ── 安全模式横幅 ─────────────────────────────────────────────────── */
+/* [hidden] 的默认 display:none 会被下面的 display:flex 覆盖 —— 这类"设了 hidden
+   却还显示"的 bug 只在给元素单独设了 display 时出现。显式让 hidden 优先。 */
+.banner[hidden] { display: none; }
 .banner {
   display: flex; align-items: center; gap: 12px; padding: 10px 16px;
   background: color-mix(in srgb, var(--ui-warn) 16%, var(--ui-panel));
@@ -241,3 +244,13 @@ input { font: inherit; color: inherit; }
 .skin .hover-acts button:hover { color: var(--ui-text); border-color: var(--ui-accent); }
 .skin .hover-acts button.danger:hover { color: var(--ui-error); border-color: var(--ui-error); }
 .empty-filtered { padding: 24px 14px; text-align: center; color: var(--ui-faint); font-size: 13px; }
+
+/* ── 轮播控制条（只在多背景皮肤时出现） ─────────────────────────────── */
+.rotate-bar[hidden] { display: none; }
+.rotate-bar { display: flex; gap: 6px; align-items: center; }
+.rotate-bar button, .rotate-bar select {
+  padding: 4px 10px; border-radius: 7px; font-size: 12px; font-family: inherit;
+  border: 1px solid var(--ui-line); background: var(--ui-panel); color: var(--ui-dim); cursor: default;
+}
+.rotate-bar button:hover { color: var(--ui-text); border-color: var(--ui-accent); }
+.rotate-bar button[aria-pressed="true"] { background: var(--ui-accent); border-color: transparent; color: #fff; }

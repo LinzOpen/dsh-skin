@@ -215,13 +215,25 @@ function renderReport(skin, report) {
   box.appendChild(el("div", { class: "meta" }, [dl]));
 }
 
+/** 轮播控制条：只在当前皮肤有超过一张背景时出现，并反映 rotate 开关和间隔。 */
+async function paintRotateBar(skin) {
+  const multi = !!(skin && skin.backdrops && skin.backdrops.length > 1);
+  $("rotate-bar").hidden = !multi;
+  if (!multi) return;
+  const st = await api.state.read();
+  $("mode-single").setAttribute("aria-pressed", String(!st.rotate));
+  $("mode-rotate").setAttribute("aria-pressed", String(st.rotate));
+  const sel = $("interval");
+  if (st.rotateMinutes) sel.value = String(st.rotateMinutes);
+}
+
 /* ── 动作 ───────────────────────────────────────────────────────────── */
 
 async function select(id) {
   ui.current = id;
   renderList();
   const skin = ui.skins.find((s) => s.id === id) || null;
-  $("next").hidden = !(skin && skin.backdrops && skin.backdrops.length > 1);
+  await paintRotateBar(skin);
   if (!skin || skin.broken) { injectPreview(""); renderReport(skin, null); return; }
   const { css, report } = await api.skins.preview(id);
   injectPreview(css);
@@ -330,6 +342,20 @@ function wire() {
     const moved = await api.skins.next(ui.current);
     if (!moved) { toast("这套皮肤只有一张背景"); return; }
     await select(ui.current);
+  });
+  $("mode-single").addEventListener("click", async () => {
+    await api.state.patch({ rotate: false });
+    await paintRotateBar(ui.skins.find((s) => s.id === ui.current));
+    toast("已切到单张");
+  });
+  $("mode-rotate").addEventListener("click", async () => {
+    await api.state.patch({ rotate: true });
+    await paintRotateBar(ui.skins.find((s) => s.id === ui.current));
+    toast("已开启全库轮播");
+  });
+  $("interval").addEventListener("change", async (e) => {
+    await api.state.patch({ rotateMinutes: Number(e.target.value) });
+    toast(`轮播间隔改为 ${e.target.options[e.target.selectedIndex].text}`);
   });
 
   $("open").addEventListener("click", () => openShell($("url").value));
