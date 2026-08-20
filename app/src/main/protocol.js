@@ -15,6 +15,7 @@
  */
 const fs = require("node:fs");
 const path = require("node:path");
+const { pathToFileURL } = require("node:url");
 const { protocol, net } = require("electron");
 const skins = require("./skins");
 
@@ -48,7 +49,11 @@ function serve(file) {
   if (!fs.existsSync(file) || fs.statSync(file).isDirectory()) {
     return new Response("not found", { status: 404 });
   }
-  return net.fetch(`file://${encodeURI(file.split(path.sep).join("/"))}`);
+  // pathToFileURL，不是手拼 file:// + encodeURI。
+  // encodeURI **不转义 #**，所以一个叫 "a #1 b.png" 的素材会被解析成
+  // 路径 "a%20" + 片段 "#1%20b.png" —— 图静默 404，而用户从相册导出的文件
+  // 名里带 # 是很常见的。它同时也处理好 Windows 的盘符和空格。
+  return net.fetch(pathToFileURL(file).href);
 }
 
 function handle(request) {

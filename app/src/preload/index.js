@@ -28,13 +28,25 @@ contextBridge.exposeInMainWorld("dshSkin", {
     list: () => ipcRenderer.invoke("shell:list"),
     forget: (url) => ipcRenderer.invoke("shell:forget", url),
   },
+  /** 救援。程序还开得起来时走这里；开不起来时同样的能力在命令行的
+   *  dsh-skin doctor / undo / safe-mode 里，读写的是同一批文件。 */
+  recovery: {
+    status: () => ipcRenderer.invoke("recovery:status"),
+    history: () => ipcRenderer.invoke("recovery:history"),
+    preview: (id) => ipcRenderer.invoke("recovery:preview", id),
+    restore: (id) => ipcRenderer.invoke("recovery:restore", id),
+    snapshot: (label) => ipcRenderer.invoke("recovery:snapshot", label),
+    safeMode: (on) => ipcRenderer.invoke("recovery:safe-mode", on),
+    repair: () => ipcRenderer.invoke("recovery:repair"),
+    revealHome: () => ipcRenderer.invoke("recovery:reveal-home"),
+  },
   app: {
     openExternal: (url) => ipcRenderer.invoke("app:open-external", url),
     paths: () => ipcRenderer.invoke("app:paths"),
   },
   /** 主进程主动推的三种变化。返回一个取消订阅的函数。 */
   on: (event, handler) => {
-    const allowed = ["skin:changed", "library:changed", "shell:changed"];
+    const allowed = ["skin:changed", "library:changed", "shell:changed", "recovery:open"];
     if (!allowed.includes(event)) throw new Error(`未知事件：${event}`);
     const wrapped = (_e, payload) => handler(payload);
     ipcRenderer.on(event, wrapped);

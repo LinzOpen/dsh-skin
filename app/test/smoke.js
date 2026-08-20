@@ -19,6 +19,27 @@ const SANDBOX = fs.mkdtempSync(path.join(os.tmpdir(), "dsh-skin-smoke-"));
 process.env.DSH_SKIN_HOME = SANDBOX;
 process.env.DSH_SKIN_HEADLESS = "1";
 
+// 一套两张背景的皮肤，用来验证「换下一张背景」在**关闭轮播时**也管用。
+const multi = path.join(SANDBOX, "skins", "multi-backdrop");
+fs.mkdirSync(path.join(multi, "assets"), { recursive: true });
+for (const name of ["a.svg", "b.svg"]) {
+  fs.writeFileSync(path.join(multi, "assets", name),
+    '<svg xmlns="http://www.w3.org/2000/svg" width="2" height="2"/>');
+}
+fs.writeFileSync(path.join(multi, "skin.json"), JSON.stringify({
+  name: "两张背景", backdrops: ["assets/a.svg", "assets/b.svg"] }));
+fs.writeFileSync(path.join(multi, "skin.css"),
+  ':root{--color-bg:#000;--color-text:#fff;--color-accent:#0af;}\n#app{background-image:var(--dsh-backdrop);}\n');
+
+// 素材名里带 # 和空格 —— encodeURI 不转义 #，从 # 起会被当成 URL 片段。
+const odd = path.join(SANDBOX, "skins", "odd-names");
+fs.mkdirSync(path.join(odd, "assets"), { recursive: true });
+fs.writeFileSync(path.join(odd, "assets", "a #1 b.svg"),
+  '<svg xmlns="http://www.w3.org/2000/svg" width="2" height="2"/>');
+fs.writeFileSync(path.join(odd, "skin.json"), JSON.stringify({ name: "怪文件名" }));
+fs.writeFileSync(path.join(odd, "skin.css"),
+  ':root{--color-bg:#000;--color-text:#fff;--color-accent:#0af;}\n#app{background-image:url("__SKIN__/a #1 b.svg");}\n');
+
 // 放一套故意带远程 URL 的皮肤，用来验证"拦截"这条是真的。
 const evil = path.join(SANDBOX, "skins", "evil-remote");
 fs.mkdirSync(evil, { recursive: true });
@@ -124,6 +145,39 @@ app.whenReady().then(async () => {
 
     shellWin.destroy();
     server.close();
+
+    /* 6. 回归：关闭轮播时「换下一张背景」也要真的换。
+          原来 currentBackdrop 在 rotate=false 时硬返回第一张，而按钮只要
+          背景多于一张就显示 —— 点了没反应，且没有任何报错。 */
+    const state = require("../src/main/state");
+    state.patch({ skin: "multi-backdrop", rotate: false, cycle: [], cursor: 0 });
+    skins.invalidate();
+    const multiSkin = skins.find("multi-backdrop");
+    const first = skins.currentBackdrop(multiSkin);
+    const advanced = skins.advance("multi-backdrop", true);
+    const second = skins.currentBackdrop(multiSkin);
+    check("关闭轮播时也能手动换下一张背景", advanced && first !== second, `${first} -> ${second}`);
+
+    /* 7. 回归：素材名里的 # 不能把路径截断。 */
+    const hashed = await net.fetch(`dshskin://skin/odd-names/${encodeURIComponent("a #1 b.svg")}`);
+    check("素材名里带 # 和空格也取得到", hashed.status === 200, `HTTP ${hashed.status}`);
+
+    /* 8. 崩溃循环断路器：连续两次没走到界面就自动进安全模式。 */
+    const recovery = require("../src/main/recovery");
+    const { home } = require("@dsh-skin/core");
+    home.setSafeMode(false, undefined);
+    fs.writeFileSync(home.paths().bootLock, JSON.stringify({ at: "x", fails: 1 }));
+    const trip = recovery.beginBoot();
+    check("连续启动失败会自动进安全模式", trip.safeMode && trip.tripped, `fails=${trip.fails}`);
+    recovery.bootSucceeded();
+    check("界面出来之后断路器标记被清掉", !fs.existsSync(home.paths().bootLock));
+    home.setSafeMode(false, undefined);
+
+    /* 9. 还原点是自动存的 —— 用户不需要记得，agent 也不需要。 */
+    const before = require("@dsh-skin/core").history.list().length;
+    await new Promise((r) => setTimeout(r, 1100));   // 还原点 id 带时间戳，同秒会撞名
+    recovery.checkpoint("smoke", "冒烟测试存的");
+    check("改动前会自动存还原点", require("@dsh-skin/core").history.list().length === before + 1);
   } catch (error) {
     check("测试跑完", false, error.message);
   }

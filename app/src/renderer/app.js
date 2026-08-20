@@ -178,7 +178,10 @@ async function select(id) {
 
 async function reload(keepSelection = true) {
   const [skins, paths] = await Promise.all([api.skins.list(), api.app.paths()]);
-  ui.skins = skins.map((s) => ({ ...s, mine: s.dir.startsWith(paths.userSkins) }));
+  // 用分隔符做前缀比对；否则 ~/.dsh-skin/skinsXXX 里的皮肤会被标成「我的」。
+  const sep = paths.userSkins.includes("\\") ? "\\" : "/";
+  const underUser = (dir) => dir === paths.userSkins || dir.startsWith(paths.userSkins + sep);
+  ui.skins = skins.map((s) => ({ ...s, mine: underUser(s.dir) }));
   const state = await api.state.read();
   const want = keepSelection && ui.current ? ui.current : state.skin;
   ui.current = ui.skins.some((s) => s.id === want) ? want : (ui.skins[0]?.id ?? null);
@@ -230,6 +233,7 @@ function wire() {
         $(other.dataset.view).dataset.active = on ? "1" : "0";
       }
       if (tab.dataset.view === "shellview") renderShells();
+      if (tab.dataset.view === "recovery") refreshRecovery();
     });
   }
 
@@ -284,3 +288,154 @@ function wire() {
 $("frame").addEventListener("load", () => { if (ui.current) select(ui.current); else applyScheme(); });
 wire();
 reload();
+
+/* ── 恢复 ─────────────────────────────────────────────────────────────
+   这一页是给"程序还打得开、但有东西不对"的情况用的。程序打不开时，
+   同样的能力在命令行里（页面底部写了三条命令）。 */
+
+let health = null;
+
+/** 时间戳 → 人能读的相对时间。非技术用户面对一串 ISO 时间是认不出"哪一次"的。 */
+function ago(iso) {
+  if (!iso) return "时间未知";
+  const seconds = Math.max(0, (Date.now() - new Date(iso).getTime()) / 1000);
+  if (seconds < 60) return "刚刚";
+  if (seconds < 3600) return `${Math.floor(seconds / 60)} 分钟前`;
+  if (seconds < 86400) return `${Math.floor(seconds / 3600)} 小时前`;
+  return `${Math.floor(seconds / 86400)} 天前`;
+}
+
+function renderBanner() {
+  const bar = $("banner");
+  const safe = health && health.safeMode;
+  bar.hidden = !safe;
+  if (!safe) return;
+  $("banner-title").textContent = "正处在安全模式：现在不会套用任何皮肤";
+  $("banner-detail").textContent = `${safe.reason || "手动开启"}。你的皮肤都还在，只是暂时没有生效。`;
+  const action = $("banner-action");
+  action.textContent = "退出安全模式";
+  action.onclick = async () => {
+    await api.recovery.safeMode(false);
+    await refreshRecovery();
+    toast("已退出安全模式");
+  };
+}
+
+function renderHealth() {
+  const card = $("health");
+  if (!health) return;
+  const level = health.level;
+  card.dataset.level = level;
+  const bad = health.checks.filter((c) => c.level !== "ok");
+  $("health-title").textContent =
+    level === "ok" ? "一切正常" : level === "warn" ? `${bad.length} 处需要留意` : `${bad.length} 处有问题`;
+  $("health-detail").textContent =
+    level === "ok"
+      ? `${health.summary.skins} 套皮肤，${health.summary.restorePoints} 个还原点。出事时有得退。`
+      : bad.map((c) => c.title).join("；");
+  $("safe-toggle").textContent = health.safeMode ? "退出安全模式" : "进入安全模式";
+}
+
+function renderChecks() {
+  const box = $("checks");
+  box.replaceChildren();
+  for (const c of (health ? health.checks : [])) {
+    const row = el("div", { class: "checkrow", "data-level": c.level }, [
+      el("div", { class: "head" }, [
+        el("span", { class: "lv", text: c.level === "ok" ? "正常" : c.level === "warn" ? "留意" : "问题" }),
+        el("span", { text: c.title }),
+      ]),
+      c.detail ? el("div", { class: "detail", text: c.detail }) : null,
+    ]);
+    if (c.fix) {
+      const fix = el("div", { class: "fix" });
+      if (c.fix.command) { fix.appendChild(el("code", { text: c.fix.command })); fix.appendChild(document.createTextNode(" ")); }
+      fix.appendChild(document.createTextNode(c.fix.description || ""));
+      row.appendChild(fix);
+    }
+    box.appendChild(row);
+  }
+}
+
+async function renderPoints() {
+  const points = await api.recovery.history();
+  const box = $("points");
+  box.replaceChildren();
+  if (!points.length) {
+    box.appendChild(el("div", { class: "hint", text: "还没有还原点。做任何改动时会自动存一个，也可以现在手动存一个。" }));
+    return;
+  }
+  for (const point of points) {
+    const restore = el("button", { class: "ghost", text: "恢复到这里" });
+    restore.addEventListener("click", () => confirmRestore(point));
+    box.appendChild(el("div", { class: `point${point.broken ? " broken" : ""}` }, [
+      el("span", { class: "what" }, [
+        el("b", { text: point.label }),
+        el("small", { text: `${ago(point.at)} · ${point.skins} 套皮肤 · 当时用的是 ${point.skin || "—"}` }),
+      ]),
+      point.broken ? null : restore,
+    ]));
+  }
+}
+
+/** 先预演给用户看，他点了确认才真的动手。 */
+async function confirmRestore(point) {
+  const preview = await api.recovery.preview(point.id);
+  if (!preview.ok) { toast(preview.error); return; }
+  const lines = preview.changes.map((c) => `· ${c.action}${c.skin ? ` ${c.skin}/` : " "}${c.file}`);
+  if (preview.missingAssets.length) {
+    lines.push("", `注意：有 ${preview.missingAssets.length} 张素材图当时还在、现在不在了。还原点里只存文字，图找不回来。`);
+  }
+  if (preview.kept.length) {
+    lines.push("", `这些是那之后新增的，会原样保留（恢复不删东西）：${preview.kept.join("、")}`);
+  }
+  const ok = window.confirm(`恢复到「${point.label}」（${ago(point.at)}）\n\n会做这些事：\n${lines.join("\n")}\n\n继续吗？`);
+  if (!ok) return;
+  const result = await api.recovery.restore(point.id);
+  if (!result.ok) { toast(result.error); return; }
+  await refreshRecovery();
+  await reload(false);
+  toast(`已恢复到「${point.label}」`);
+}
+
+async function refreshRecovery() {
+  health = await api.recovery.status();
+  renderBanner();
+  renderHealth();
+  renderChecks();
+  await renderPoints();
+}
+
+function wireRecovery() {
+  $("rollback").addEventListener("click", async () => {
+    const points = (await api.recovery.history()).filter((p) => !p.broken);
+    if (!points.length) { toast("还没有还原点，没得退"); return; }
+    await confirmRestore(points[0]);
+  });
+  $("autofix").addEventListener("click", async () => {
+    const result = await api.recovery.repair();
+    await refreshRecovery();
+    await reload(false);
+    toast(result.done.length ? `修了 ${result.done.length} 处：${result.done.map((d) => d.action).join("、")}` : "没有能自动修的");
+  });
+  $("save-point").addEventListener("click", async () => {
+    const label = window.prompt("给这个还原点起个名字，方便以后认出来", "已知可用的状态");
+    if (!label) return;
+    const point = await api.recovery.snapshot(label);
+    await refreshRecovery();
+    toast(point.ok ? `已存下「${label}」` : `存不下来：${point.error}`);
+  });
+  $("safe-toggle").addEventListener("click", async () => {
+    const on = !(health && health.safeMode);
+    await api.recovery.safeMode(on);
+    await refreshRecovery();
+    toast(on ? "已进入安全模式" : "已退出安全模式");
+  });
+  $("open-home").addEventListener("click", () => api.recovery.revealHome());
+
+  // 菜单里的「恢复中心」会推这个事件过来
+  api.on("recovery:open", () => document.querySelector('[data-view="recovery"]').click());
+}
+
+wireRecovery();
+refreshRecovery();

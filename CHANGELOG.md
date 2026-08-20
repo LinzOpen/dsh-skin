@@ -20,6 +20,13 @@ Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Versions follo
 - **桌面程序** —「工作室」在内置沙盒里实时预览、跑检查、新建皮肤、把本地图片导入成皮肤；
   「外壳」把任意网址装进一个带皮肤的窗口。macOS / Windows / Linux。
 - **六套原创皮肤**，全部纯 CSS、零图片、CC0-1.0：午夜港湾、纸灯、苔痕、青瓷、余烬、石墨。
+- **出事之后的一整套救援机制** —— 面向"用户 100% 依赖 agent，而 agent 做错了事又崩了"
+  这个场景：每次改动前自动存还原点（最多 30 个，只存文本）；回退**只写回和补建、从不删除**，
+  且默认先预演；连续两次启动没走到界面自动进安全模式；`state.json` 坏了先隔离再退回默认值，
+  越界字段自动收拢；`dsh-skin doctor / history / undo / snapshot / safe-mode` 全部
+  **不需要程序在运行**，读写的是同一批文件；`doctor --json` 的每条结论都带可执行的修复命令，
+  写给 agent 读。程序里对应「恢复」页。见 `docs/agent-recovery.md`。
+- **`AGENTS.md`** —— 在这个仓库里干活踩过的坑，含每一条的代价。
 - **`adapters/dsh-plugin`** — 给 DSH 渲染进程提供皮肤库的本地素材服务。
   服务端有自动化测试；挂进真实 DSH 那一步未验证。
 

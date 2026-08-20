@@ -13,4 +13,22 @@ npx @dsh-skin/cli pack skins/my-skin -o my-skin.zip
 
 `pack` 用的是自带的零依赖 ZIP 编码器（固定时间戳，输出可复现），并且**拒绝打包带 error 的皮肤**。
 
+## 出事之后
+
+这几条**不需要程序在运行** —— 它们读写的是 `~/.dsh-skin`，所以在程序打不开的时候仍然可用。
+那正是它们存在的理由。
+
+```bash
+npx @dsh-skin/cli doctor          # 现在什么状况，每条结论带着修它的命令
+npx @dsh-skin/cli doctor --json   # 同上，给 AI 助手读的结构化输出
+npx @dsh-skin/cli undo            # 预演回退（不动手）
+npx @dsh-skin/cli undo --yes      # 真的回退
+npx @dsh-skin/cli history         # 列出还原点
+npx @dsh-skin/cli snapshot -m 说明 # 现在存一个
+npx @dsh-skin/cli safe-mode on    # 下次启动不套任何皮肤
+```
+
+`undo` 不加 `--yes` 永远只是预演；回退只写回和补建，从不删东西。
+完整契约（含给 agent 的四条硬规矩）：[docs/agent-recovery.md](../../docs/agent-recovery.md)
+
 Rules: [docs/skin-format.md](../../docs/skin-format.md) · MIT

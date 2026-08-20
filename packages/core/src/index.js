@@ -11,6 +11,9 @@ const { normalizeManifest, ManifestError, ID_RE } = require("./manifest");
 const { validateCss, ASSET_TOKEN, stripComments } = require("./validate");
 const { scanLibrary, scanDir, readSkin, isSkinDir, SKIN_CSS, SKIN_JSON } = require("./library");
 const rules = require("./rules");
+const home = require("./home");
+const history = require("./history");
+const doctor = require("./doctor");
 
 /**
  * 把皮肤 CSS 里的 __SKIN__ 换成宿主能取到素材的前缀。
@@ -32,4 +35,7 @@ module.exports = {
   resolveCss, ASSET_TOKEN,
   // 常量
   SKIN_CSS, SKIN_JSON,
+  // 用户目录 / 还原点 / 体检 —— 程序和命令行共用同一份实现，
+  // 因为救援发生在程序打不开的时候，那时候只剩命令行。
+  home, history, doctor,
 };

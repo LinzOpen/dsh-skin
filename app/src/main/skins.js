@@ -58,10 +58,18 @@ function newCycle(skin) {
   return ids;
 }
 
+/**
+ * 当前该显示哪一张。
+ *
+ * 只要牌堆里有牌就照着牌堆走，**不管轮播开没开**。原先这里写的是
+ * `if (!s.rotate) return backdrops[0]`，结果是：关闭轮播时点「换下一张背景」，
+ * advance() 老老实实把游标推进了一格，而这里根本不看游标 —— 按钮点了没反应，
+ * 而按钮只要皮肤有超过一张背景就显示。手动换和自动轮播是两回事，
+ * 前者不该被后者的开关关掉。
+ */
 function currentBackdrop(skin) {
   if (!skin.backdrops.length) return "";
   const s = state.read();
-  if (!s.rotate) return skin.backdrops[0];
   const pick = s.cycle[s.cursor];
   return skin.backdrops.includes(pick) ? pick : skin.backdrops[0];
 }
@@ -72,6 +80,8 @@ function advance(id, force) {
   if (!skin || skin.backdrops.length < 2) return false;
   const s = state.read();
   const now = Date.now();
+  // 自动推进要看间隔；手动（force）不看 —— 用户点了就得换。
+  if (!force && !s.rotate) return false;
   if (!force && now - (s.lastRotate || 0) < s.rotateMinutes * 60000) return false;
   let { cycle, cursor } = s;
   cursor += 1;

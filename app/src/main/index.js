@@ -20,9 +20,13 @@ const skins = require("./skins");
 const proto = require("./protocol");
 const shellMode = require("./shell");
 const { importImages } = require("./importer");
+const recovery = require("./recovery");
 
 // 必须在 ready 之前。放到 whenReady 里注册会静默不生效，表现是所有素材 404。
 proto.registerScheme();
+
+// 也必须在 ready 之前：要在做任何事之前知道上一次启动有没有走完。
+const boot = recovery.beginBoot();
 
 let studio = null;
 let rotateTimer = null;
@@ -42,6 +46,8 @@ function openStudio() {
     },
   });
   studio.loadURL("dshskin://app/index.html");
+  // 界面出来了 = 这次启动是好的。清掉断路器的标记。
+  studio.webContents.once("did-finish-load", () => recovery.bootSucceeded());
   studio.on("closed", () => { studio = null; });
   return studio;
 }
@@ -56,6 +62,7 @@ const notify = (channel, payload) => {
 
 function scheduleRotation() {
   if (rotateTimer) clearInterval(rotateTimer);
+  if (core.home.safeModeOn()) return;      // 安全模式下什么都不自动做
   if (!state.read().rotate) return;
   rotateTimer = setInterval(() => {
     const id = state.read().skin;
@@ -93,6 +100,33 @@ function buildMenu() {
       ],
     },
     {
+      // 菜单里也要有一份。界面可能因为任何原因不好用，而菜单是 Electron 自己画的，
+      // 不依赖渲染进程 —— 渲染进程整个白屏时，这里还点得动。
+      label: "恢复",
+      submenu: [
+        { label: "恢复中心…", accelerator: "CmdOrCtrl+Shift+H", click: () => {
+          openStudio();
+          notify("recovery:open", null);
+        } },
+        { label: "现在存一个还原点", click: () => {
+          const point = recovery.checkpoint("manual", "手动存档");
+          dialog.showMessageBox({ type: point.ok ? "info" : "error",
+            message: point.ok ? "已存下还原点" : "存不下来",
+            detail: point.ok ? point.record.label : point.error });
+        } },
+        { type: "separator" },
+        { label: "安全模式（不套任何皮肤）", type: "checkbox", checked: core.home.safeModeOn(),
+          click: async (item) => {
+            core.home.setSafeMode(item.checked, "在菜单里手动开启");
+            await shellMode.applyAll(item.checked ? "none" : state.read().skin);
+            scheduleRotation();
+            buildMenu();
+            notify("skin:changed", { id: state.read().skin, reason: "safe-mode" });
+          } },
+        { label: "打开我的 dsh-skin 目录", click: () => electronShell.openPath(paths.USER_ROOT) },
+      ],
+    },
+    {
       label: "窗口",
       submenu: [
         { label: "工作室", accelerator: "CmdOrCtrl+1", click: () => openStudio() },
@@ -112,6 +146,12 @@ function buildMenu() {
   ]));
 }
 
+/** 一个目录是不是真的在用户皮肤目录**之内**（而不是只是名字前缀相同）。 */
+function isUnderUserSkins(dir) {
+  const root = paths.USER_SKINS;
+  return dir === root || dir.startsWith(root + path.sep);
+}
+
 function refreshLibrary() {
   skins.invalidate();
   buildMenu();
@@ -119,8 +159,11 @@ function refreshLibrary() {
 }
 
 async function selectSkin(id) {
+  // 改之前先存还原点。这是整个救援机制的地基：出事之后能回到哪里，
+  // 取决于出事之前有没有人替用户存过 —— 不能指望用户或 agent 记得。
+  recovery.checkpoint("apply-skin", `套用皮肤：${skins.find(id)?.name || id}`);
   state.patch({ skin: id, cycle: [], cursor: 0 });
-  await shellMode.applyAll(id);
+  if (!core.home.safeModeOn()) await shellMode.applyAll(id);
   buildMenu();
   notify("skin:changed", { id, reason: "select" });
 }
@@ -170,6 +213,7 @@ function registerIpc() {
     const id = slugify(name);
     const dir = path.join(paths.ensureUserDirs(), id);
     if (fs.existsSync(dir)) return { ok: false, error: `已经有一套叫 ${id} 的皮肤了` };
+    recovery.checkpoint("new-skin", `新建皮肤：${name || id}`);
     fs.mkdirSync(path.join(dir, "assets"), { recursive: true });
     fs.writeFileSync(path.join(dir, "skin.json"), `${JSON.stringify({
       id, name: name || id, version: "0.1.0", tagline: "", author: "", license: "CC0-1.0",
@@ -187,6 +231,7 @@ function registerIpc() {
       filters: [{ name: "图片", extensions: ["png", "jpg", "jpeg", "webp", "gif", "bmp"] }],
     });
     if (canceled || !filePaths.length) return { ok: false, cancelled: true };
+    recovery.checkpoint("import-images", `导入素材：${name || "未命名"}（${filePaths.length} 张）`);
     const result = importImages(filePaths, { name });
     if (result.ok) refreshLibrary();
     return result;
@@ -196,7 +241,9 @@ function registerIpc() {
     const skin = skins.find(id);
     if (!skin) return { ok: false, error: "找不到这套皮肤" };
     // 内置皮肤在程序包里，删了下次升级又回来，而且用户会以为删失败了。
-    if (!skin.dir.startsWith(paths.USER_SKINS)) {
+    // 带上分隔符再比：不带的话 ~/.dsh-skin/skinsXXX/foo 也会 startsWith 成功，
+    // 于是一个不在用户目录里的皮肤被当成可删的。
+    if (!isUnderUserSkins(skin.dir)) {
       return { ok: false, error: "这是内置皮肤，删不掉。想改它就在自己的皮肤目录里放一套同 id 的，它会覆盖内置那套。" };
     }
     const { response } = await dialog.showMessageBox({
@@ -205,6 +252,12 @@ function registerIpc() {
       detail: `会删掉整个目录：${skin.dir}\n这一步不能撤销。`,
     });
     if (response !== 0) return { ok: false, cancelled: true };
+    // 删除是唯一一个还原点救不回全部内容的操作（素材图不进快照），
+    // 所以快照失败时要直接拦下来，而不是"存不上也照删"。
+    const point = recovery.checkpoint("delete-skin", `删除皮肤：${skin.name}`);
+    if (!point.ok) {
+      return { ok: false, error: `存还原点失败，已取消删除：${point.error}` };
+    }
     fs.rmSync(skin.dir, { recursive: true, force: true });
     if (state.read().skin === id) state.patch({ skin: "none" });
     refreshLibrary();
@@ -215,7 +268,10 @@ function registerIpc() {
     const clean = String(url || "").trim();
     if (!/^https?:\/\//i.test(clean)) return { ok: false, error: "网址要以 http:// 或 https:// 开头" };
     const s = state.read();
-    shellMode.open(clean, s.skin, () => notify("shell:changed", shellMode.all().map(([u]) => u)));
+    // 安全模式下外壳照开，但不套皮肤 —— 用户还能用那个界面，
+    // 只是没有皮肤。开不开得起来和皮肤有没有问题是两件事。
+    const skinForShell = core.home.safeModeOn() ? "none" : s.skin;
+    shellMode.open(clean, skinForShell, () => notify("shell:changed", shellMode.all().map(([u]) => u)));
     const shells = [...new Set([clean, ...s.shells])].slice(0, 12);
     state.patch({ shells });
     notify("shell:changed", shellMode.all().map(([u]) => u));
@@ -231,6 +287,52 @@ function registerIpc() {
     return shells;
   });
 
+  /* ── 救援 ────────────────────────────────────────────────────────────
+     这一组必须在程序还能打开的时候可用；程序打不开时，同样的能力在
+     `dsh-skin doctor / undo / safe-mode` 里，读写的是同一批文件。 */
+  ipcMain.handle("recovery:status", () => ({
+    ...core.doctor.diagnose({ builtinRoots: [paths.builtinSkins()] }),
+    boot,
+    safeMode: core.home.safeModeInfo(),
+  }));
+  ipcMain.handle("recovery:history", () => core.history.list());
+  ipcMain.handle("recovery:preview", (_e, id) => core.history.restore(id, { dryRun: true }));
+  ipcMain.handle("recovery:restore", async (_e, id) => {
+    // 恢复之前先给"恢复之前的样子"也存一个还原点 —— 万一恢复到的是更早的一个错版本，
+    // 用户还能再退回来。没有这一步，恢复本身就成了一条单行道。
+    recovery.checkpoint("before-restore", "恢复之前的状态");
+    const result = core.history.restore(id);
+    if (result.ok) {
+      skins.invalidate();
+      const current = state.read().skin;
+      if (!core.home.safeModeOn()) await shellMode.applyAll(current);
+      buildMenu();
+      notify("library:changed", skins.list());
+      notify("skin:changed", { id: current, reason: "restore" });
+    }
+    return result;
+  });
+  ipcMain.handle("recovery:snapshot", (_e, label) =>
+    recovery.checkpoint("manual", label || "手动存档"));
+  ipcMain.handle("recovery:safe-mode", async (_e, on) => {
+    core.home.setSafeMode(Boolean(on), on ? "在程序里手动开启" : undefined);
+    const current = state.read().skin;
+    await shellMode.applyAll(core.home.safeModeOn() ? "none" : current);
+    scheduleRotation();
+    buildMenu();
+    notify("skin:changed", { id: current, reason: "safe-mode" });
+    return core.home.safeModeOn();
+  });
+  ipcMain.handle("recovery:repair", () => {
+    recovery.checkpoint("before-repair", "自动修复之前的状态");
+    const result = core.doctor.repair({ builtinRoots: [paths.builtinSkins()] });
+    skins.invalidate();
+    buildMenu();
+    notify("library:changed", skins.list());
+    return result;
+  });
+  ipcMain.handle("recovery:reveal-home", () => electronShell.openPath(paths.USER_ROOT));
+
   ipcMain.handle("app:open-external", (_e, url) =>
     /^https?:\/\//i.test(String(url)) ? electronShell.openExternal(url) : null);
   ipcMain.handle("app:paths", () => ({
@@ -244,6 +346,14 @@ function registerIpc() {
 app.whenReady().then(() => {
   proto.install();
   paths.ensureUserDirs();
+  // 让命令行也知道内置皮肤在哪。不记的话，`dsh-skin doctor` 在终端里看不到
+  // 内置皮肤，会把"当前用的是内置皮肤"误报成"这套皮肤不存在"。
+  core.home.recordInstall({
+    builtinSkins: paths.builtinSkins(),
+    version: app.getVersion(),
+    electron: process.versions.electron,
+    platform: process.platform,
+  });
   registerIpc();
   buildMenu();
   scheduleRotation();

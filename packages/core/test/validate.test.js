@@ -137,3 +137,24 @@ test("后面的根覆盖前面的同 id 皮肤", () => {
   fs.rmSync(builtin, { recursive: true, force: true });
   fs.rmSync(user, { recursive: true, force: true });
 });
+
+test("中文 / 带空格的目录名能推出合法 id，显示名保持原样", () => {
+  const zh = normalizeManifest({}, "我调的配色");
+  assert.match(zh.id, /^[a-z0-9][a-z0-9-]*$/, "id 要能安全地进 URL 和路径");
+  assert.equal(zh.name, "我调的配色", "显示的还是用户自己起的名字");
+  assert.equal(zh.derivedId, true);
+  const spaced = normalizeManifest({}, "My Skin 2");
+  assert.match(spaced.id, /^my-skin-2-/);
+});
+
+test("推出来的 id 跨次启动稳定，不同名字不撞车", () => {
+  // 不稳定的话，设置里记的「当前皮肤」下次启动就对不上了
+  assert.equal(normalizeManifest({}, "青瓷").id, normalizeManifest({}, "青瓷").id);
+  assert.notEqual(normalizeManifest({}, "配色A").id, normalizeManifest({}, "配色B").id);
+});
+
+test("skin.json 里显式写错的 id 仍然当场报错", () => {
+  // 推导只兜底目录名。作者自己写进 skin.json 的 id 是一句声明，写错要立刻知道。
+  assert.throws(() => normalizeManifest({ id: "../evil" }, "fine"), /不合法/);
+  assert.throws(() => normalizeManifest({ id: "Has Upper" }, "fine"), /不合法/);
+});

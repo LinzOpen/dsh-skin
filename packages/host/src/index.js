@@ -24,6 +24,7 @@
 
 const fs = require("node:fs");
 const path = require("node:path");
+const { pathToFileURL } = require("node:url");
 const core = require("@dsh-skin/core");
 
 const DEFAULT_SCHEME = "dshskin";
@@ -79,7 +80,9 @@ function createSkinHost(options) {
       const asset = rel.slice(slash + 1).split("?")[0];
       for (const candidate of [path.join(skin.dir, skin.assets, asset), path.join(skin.dir, asset)]) {
         if (inside(skin.dir, candidate) && fs.existsSync(candidate) && fs.statSync(candidate).isFile()) {
-          return net.fetch(`file://${encodeURI(candidate.split(path.sep).join("/"))}`);
+          // pathToFileURL 而不是手拼：encodeURI 不转义 #，带 # 的素材名会被
+          // 从 # 处截断，表现是图静默 404。它也顺带处理 Windows 盘符和空格。
+          return net.fetch(pathToFileURL(candidate).href);
         }
       }
       return new Response("not found", { status: 404 });

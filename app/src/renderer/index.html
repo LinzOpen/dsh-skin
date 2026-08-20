@@ -11,10 +11,22 @@
   <div class="tabs" role="tablist">
     <button role="tab" data-view="studio" aria-selected="true">工作室</button>
     <button role="tab" data-view="shellview" aria-selected="false">外壳</button>
+    <button role="tab" data-view="recovery" aria-selected="false">恢复</button>
   </div>
   <div class="grow"></div>
   <button class="ghost" id="scheme" aria-pressed="false" title="切换预览的明暗，不影响你的系统设置">预览：跟随系统</button>
 </header>
+
+<!-- 安全模式横幅。它压在所有视图之上，因为它改变了整个程序的行为，
+     只在某一个页签里说一声是不够的。 -->
+<div class="banner" id="banner" hidden>
+  <span class="dot"></span>
+  <div>
+    <b id="banner-title"></b>
+    <p id="banner-detail"></p>
+  </div>
+  <button class="primary" id="banner-action"></button>
+</div>
 
 <!-- ── 工作室 ─────────────────────────────────────────────────────── -->
 <main class="view" id="studio" data-active="1">
@@ -64,6 +76,51 @@
       <div class="list">
         <h3>最近用过</h3>
         <div id="recent-list"></div>
+      </div>
+    </div>
+  </div>
+</main>
+
+<!-- ── 恢复 ───────────────────────────────────────────────────────── -->
+<main class="view" id="recovery">
+  <div class="scroll">
+    <div class="shellwrap">
+      <h2>出问题了？先从这里开始</h2>
+      <p>这一页不需要任何技术知识。上面一句话是现在的状况，下面那个按钮把一切退回到上一次正常的样子。</p>
+
+      <div class="verdict-card" id="health">
+        <strong id="health-title">正在检查…</strong>
+        <p id="health-detail"></p>
+      </div>
+
+      <div class="actions">
+        <button class="primary" id="rollback">回到上一个正常状态</button>
+        <button class="ghost" id="autofix">自动修能修的</button>
+        <button class="ghost" id="save-point">现在存一个还原点</button>
+        <button class="ghost" id="safe-toggle">进入安全模式</button>
+        <button class="ghost" id="open-home">打开我的 dsh-skin 目录</button>
+      </div>
+      <p class="hint">「回到上一个正常状态」会先给你看它要改什么，你确认了才动手。它只写回和补建，从不删东西。</p>
+
+      <div class="list">
+        <h3>还原点</h3>
+        <div id="points"></div>
+      </div>
+
+      <div class="list">
+        <h3>自检</h3>
+        <div id="checks"></div>
+      </div>
+
+      <div class="list">
+        <h3>程序打不开的时候</h3>
+        <div class="terminal-help">
+          <p>如果连这个窗口都打不开了，在「终端」里跑下面任意一条 —— 它们读写的是同一批文件，不需要程序在运行：</p>
+          <pre><code>npx @dsh-skin/cli doctor        # 看现在什么状况
+npx @dsh-skin/cli undo          # 退回上一个还原点
+npx @dsh-skin/cli safe-mode on  # 下次启动不套任何皮肤</code></pre>
+          <p>把 <code>doctor --json</code> 的输出整个交给你的 AI 助手，它能看懂并告诉你下一步。</p>
+        </div>
       </div>
     </div>
   </div>
