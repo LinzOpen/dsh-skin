@@ -57,10 +57,10 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y xvfb
           xvfb-run --auto-servernum npx electron --no-sandbox app/test/smoke.js
-          xvfb-run --auto-servernum npx electron --no-sandbox packages/host/test/smoke.js
+          xvfb-run --auto-servernum npx electron --no-sandbox packages/electron/test/smoke.js
 
       - name: End-to-end (macOS / Windows)
         if: runner.os != 'Linux'
         run: |
           npx electron app/test/smoke.js
-          npx electron packages/host/test/smoke.js
+          npx electron packages/electron/test/smoke.js

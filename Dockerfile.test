@@ -38,7 +38,7 @@ RUN node --test adapters/dsh/test/*.test.js
 # 端到端：真 Electron、真自定义协议、真注入。
 # --no-sandbox：容器里 chrome-sandbox 不是 setuid root，Electron 宁可 abort 也不无沙箱跑。
 RUN xvfb-run -a npx electron --no-sandbox app/test/smoke.js
-RUN xvfb-run -a npx electron --no-sandbox packages/host/test/smoke.js
+RUN xvfb-run -a npx electron --no-sandbox packages/electron/test/smoke.js
 
 # 打一个 Linux 包，证明打包链路在干净环境里也成立
 RUN npm run pack:linux

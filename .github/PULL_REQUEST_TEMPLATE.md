@@ -6,7 +6,7 @@
 
 - [ ] `npm run check` 通过（仓库自检 + 单元测试 + 皮肤校验）
 - [ ] 改了程序或 SDK 的话，`npx electron app/test/smoke.js` 和
-      `npx electron packages/host/test/smoke.js` 都通过
+      `npx electron packages/electron/test/smoke.js` 都通过
 
 ### 如果这个 PR 带了一套皮肤
 

@@ -9,7 +9,7 @@
 npm install
 npm run check                                 # 仓库自检 + 单元测试 + 皮肤校验
 npx electron app/test/smoke.js                # 程序端到端（真 Electron）
-npx electron packages/host/test/smoke.js      # SDK 端到端
+npx electron packages/electron/test/smoke.js      # SDK 端到端
 ```
 
 四条全过才算能提交。CI 在 ubuntu / macOS / windows 三个平台重复跑同样的东西。
@@ -19,7 +19,7 @@ npx electron packages/host/test/smoke.js      # SDK 端到端
 ```
 packages/core   引擎：清单、检查器、皮肤库、用户目录、还原点、体检。
                 零依赖，**永不 import electron**。
-packages/host   Electron 接入 SDK。
+packages/electron   Electron 接入 SDK。
 packages/cli    命令行 —— 也是程序打不开时唯一的入口。
 app             桌面程序：工作室 + 外壳 + 恢复。
 skins           六套原创皮肤，从 palette.json 生成，源和产物都提交。

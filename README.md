@@ -186,7 +186,7 @@ cd css-guard && npm install && npm start
 ```bash
 npm run check                                 # 仓库自检 + 单元测试 + 皮肤校验
 npx electron app/test/smoke.js                # 程序端到端（真 Electron）
-npx electron packages/host/test/smoke.js      # SDK 端到端
+npx electron packages/electron/test/smoke.js      # SDK 端到端
 docker build -f Dockerfile.test -t css-guard-test .   # 干净 Linux 容器里跑全量
 ```
 
@@ -196,7 +196,7 @@ CI 在 ubuntu / macOS / windows 三个平台重复跑同一套。踩过的坑写
 
 ```
 packages/core   引擎：清单、检查器、皮肤库、用户目录、还原点、体检。零依赖，不 import Electron。
-packages/host   Electron 接入 SDK。
+packages/electron   Electron 接入 SDK。
 packages/cli    命令行 —— 也是软件打不开时的入口。
 app             桌面程序：工作室 + 外壳 + 恢复。
 skins           六套原创皮肤，纯 CSS、零图片、CC0。

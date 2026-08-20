@@ -47,7 +47,7 @@ works" is a fine answer; silence is not.
 npm install
 npm run check          # lint + 单元测试 + 皮肤校验
 npx electron app/test/smoke.js               # 程序的端到端测试
-npx electron packages/host/test/smoke.js     # SDK 的端到端测试
+npx electron packages/electron/test/smoke.js     # SDK 的端到端测试
 npm start              # 跑起来看
 ```
 
