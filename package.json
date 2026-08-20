@@ -22,8 +22,7 @@
     "pack:win": "npm run pack:win --workspace @css-guard/app",
     "pack:linux": "npm run pack:linux --workspace @css-guard/app",
     "test:adapter": "node --test adapters/dsh/test/*.test.js",
-    "test:e2e": "electron app/test/smoke.js && electron packages/host/test/smoke.js",
-    "icon": "electron scripts/make-icon.js"
+    "test:e2e": "electron app/test/smoke.js && electron packages/host/test/smoke.js"
   },
   "repository": {
     "type": "git",
