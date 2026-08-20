@@ -83,13 +83,26 @@ function advance(id, force) {
   // 自动推进要看间隔；手动（force）不看 —— 用户点了就得换。
   if (!force && !s.rotate) return false;
   if (!force && now - (s.lastRotate || 0) < s.rotateMinutes * 60000) return false;
-  let { cycle, cursor } = s;
-  cursor += 1;
+
+  const before = currentBackdrop(skin);
+  let cycle = s.cycle;
+  let cursor = s.cursor + 1;
   // 洗过的牌里可能有已经被删掉的图 —— 素材增删之后旧周期会留下空号
-  if (!cycle.length || cursor >= cycle.length || !cycle.every((b) => skin.backdrops.includes(b))) {
-    cycle = newCycle(skin);
-    cursor = 0;
+  const stale = !cycle.length || !cycle.every((b) => skin.backdrops.includes(b));
+  if (stale || cursor >= cycle.length) { cycle = newCycle(skin); cursor = 0; }
+
+  // 洗完牌第一张正好就是现在这张，是很常见的情况 —— 只有两张背景时有一半的概率。
+  // 不处理的话「换下一张」点了等于没换，而且没有任何报错，用户只会觉得按钮坏了。
+  // 这条是在 Linux 容器里跑测试才暴露的：同一份代码在 macOS 上连过十几次，
+  // 因为随机数恰好没抽到那一半。
+  if (cycle[cursor] === before) {
+    cursor += 1;
+    if (cursor >= cycle.length) {
+      cycle = newCycle(skin);
+      cursor = cycle[0] === before ? 1 : 0;
+    }
   }
+
   state.patch({ cycle, cursor, lastRotate: now });
   return true;
 }

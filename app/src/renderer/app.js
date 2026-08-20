@@ -432,6 +432,7 @@ function wireRecovery() {
     toast(on ? "已进入安全模式" : "已退出安全模式");
   });
   $("open-home").addEventListener("click", () => api.recovery.revealHome());
+  $("open-rescue").addEventListener("click", () => api.recovery.revealRescue());
 
   // 菜单里的「恢复中心」会推这个事件过来
   api.on("recovery:open", () => document.querySelector('[data-view="recovery"]').click());

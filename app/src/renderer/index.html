@@ -113,13 +113,27 @@
       </div>
 
       <div class="list">
-        <h3>程序打不开的时候</h3>
+        <h3>如果连这个窗口都打不开</h3>
         <div class="terminal-help">
-          <p>如果连这个窗口都打不开了，在「终端」里跑下面任意一条 —— 它们读写的是同一批文件，不需要程序在运行：</p>
-          <pre><code>npx @dsh-skin/cli doctor        # 看现在什么状况
+          <p><b>不需要懂技术，也不需要输入任何东西。</b>打开下面这个文件夹，
+             按编号双击里面的文件就行 —— 它们用的是这个程序自己，你电脑上不用装别的东西。</p>
+          <button class="ghost" id="open-rescue">打开「急救」文件夹</button>
+          <p style="margin-top:10px">
+            <b>1 看看出了什么问题</b> — 只看，不改<br>
+            <b>2 回到上一个正常状态</b> — 先给你看它打算改什么<br>
+            <b>3 确认回退</b> — 看过第 2 步再点<br>
+            <b>4 下次启动不套皮肤</b> — 程序打不开时先点它<br>
+            <b>5 恢复正常启动</b> — 问题解决后点它
+          </p>
+          <p style="margin-top:10px">另外：程序连续两次没能启动到界面，会<b>自动</b>进入安全模式。
+             所以遇到「双击没反应」，先多双击两次。</p>
+          <details style="margin-top:10px">
+            <summary style="cursor:default">会用命令行的话（可选）</summary>
+            <pre><code>npx @dsh-skin/cli doctor        # 看现在什么状况
 npx @dsh-skin/cli undo          # 退回上一个还原点
 npx @dsh-skin/cli safe-mode on  # 下次启动不套任何皮肤</code></pre>
-          <p>把 <code>doctor --json</code> 的输出整个交给你的 AI 助手，它能看懂并告诉你下一步。</p>
+            <p>把 <code>doctor --json</code> 的输出整个交给任何一个 AI 助手，它能看懂并告诉你下一步。</p>
+          </details>
         </div>
       </div>
     </div>

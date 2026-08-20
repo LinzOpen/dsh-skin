@@ -5,6 +5,10 @@ directories:
   buildResources: build
   output: ../dist
 
+# 产物名统一写死。不写的话 Linux 会拿 package.json 的 name（@dsh-skin/app）去拼，
+# 打出 "@dsh-skin/app-0.1.0.tar.gz" 这种带斜杠的名字。
+artifactName: ${productName}-${version}-${os}-${arch}.${ext}
+
 # app.asar 里只放程序自己的代码。皮肤放在 asar 外面（extraResources），
 # 因为用户要能打开那个目录去看、去改、去照着写自己的皮肤 —— asar 里的东西
 # 打不开也改不了，那等于把"皮肤格式是公开的"这件事作废了。
@@ -47,6 +51,13 @@ nsis:
 
 linux:
   category: Utility
+  # 必须显式写。Linux 的 executableName 默认取 package.json 的 name，
+  # 而这里是 "@dsh-skin/app" —— 清洗成 "@dsh-skinapp" 之后仍然带 @，
+  # AppImage 直接拒绝构建。这条只在 Linux 上炸，macOS 用的是 productName，
+  # 所以本机永远发现不了 —— 是在 Docker 里跑打包才暴露的。
+  executableName: dsh-skin
+  synopsis: 给 Electron 应用和网页界面换皮肤
+  description: 皮肤工作室、可换肤外壳，以及一个会拒绝危险皮肤的检查器。
   target:
     - target: AppImage
       arch: [x64]

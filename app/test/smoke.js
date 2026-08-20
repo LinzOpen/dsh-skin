@@ -178,6 +178,29 @@ app.whenReady().then(async () => {
     await new Promise((r) => setTimeout(r, 1100));   // 还原点 id 带时间戳，同秒会撞名
     recovery.checkpoint("smoke", "冒烟测试存的");
     check("改动前会自动存还原点", require("@dsh-skin/core").history.list().length === before + 1);
+
+    /* 10. 零终端逃生：急救文件必须真的写出来、真的可执行、且路径真的能跑。
+           这是给"程序打不开 + 不会用终端 + 没装 Node"那类用户的唯一出路，
+           写错了没人会发现 —— 需要它的时候，没人在看。 */
+    const rescue = require("../src/main/rescue-scripts");
+    // 这里必须给**程序目录**，不能给 app.getAppPath() —— 在冒烟测试里那个指向
+    // 测试脚本自己，生成的急救脚本会去跑测试而不是体检。
+    const appDir = path.join(__dirname, "..");
+    const written = rescue.write(process.execPath, [appDir]);
+    check("急救文件写出来了", written.ok, written.dir || written.error);
+    if (written.ok) {
+      const names = fs.readdirSync(written.dir);
+      check("五个急救动作 + 一份说明都在", names.length === rescue.SCRIPTS.length + 1, names.join("、"));
+      const first = path.join(written.dir, names.find((n) => n.startsWith("1 ")));
+      check("急救脚本有执行位（没有就双击不动）",
+        process.platform === "win32" || (fs.statSync(first).mode & 0o111) !== 0);
+      // 真的跑一遍：脚本里的路径拼错过一次，表现是双击后 "No such file or directory"
+      const { execFileSync } = require("node:child_process");
+      let out = "";
+      try { out = String(execFileSync("/bin/sh", [first], { input: "\n", timeout: 60000 })); }
+      catch (error) { out = String(error.stdout || "") + String(error.stderr || ""); }
+      check("双击急救脚本真的能跑出体检结果", out.includes("dsh-skin 体检"), out.split("\n")[0] || "(没有输出)");
+    }
   } catch (error) {
     check("测试跑完", false, error.message);
   }

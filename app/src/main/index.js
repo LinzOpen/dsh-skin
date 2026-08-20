@@ -21,9 +21,67 @@ const proto = require("./protocol");
 const shellMode = require("./shell");
 const { importImages } = require("./importer");
 const recovery = require("./recovery");
+const rescueScripts = require("./rescue-scripts");
 
 // 必须在 ready 之前。放到 whenReady 里注册会静默不生效，表现是所有素材 404。
 proto.registerScheme();
+
+/* ── 急救模式 ──────────────────────────────────────────────────────────
+   用户从 ~/.dsh-skin/急救/ 里双击进来的。做完打印、立刻退出，不开任何窗口。
+   为什么要在程序里做而不是让脚本去调命令行：一个不写代码的用户机器上多半没有
+   Node，`npx @dsh-skin/cli` 跑不起来。而这个程序本身就是他已经装好的运行时。 */
+const RECOVERY_FLAG = "--recovery=";
+const recoveryArg = process.argv.find((a) => a.startsWith(RECOVERY_FLAG));
+if (recoveryArg) {
+  runRescue(recoveryArg.slice(RECOVERY_FLAG.length));
+}
+
+function runRescue(action) {
+  const say = (line = "") => process.stdout.write(`${line}\n`);
+  const mark = { ok: "✓", warn: "!", error: "✗" };
+  try {
+    if (action === "doctor") {
+      const report = core.doctor.diagnose({ builtinRoots: [paths.builtinSkins()] });
+      say("dsh-skin 体检\n");
+      for (const c of report.checks) {
+        say(`  ${mark[c.level]} ${c.title}`);
+        if (c.detail) say(`      ${c.detail}`);
+        if (c.fix && c.fix.description) say(`      → ${c.fix.description}`);
+      }
+      const bad = report.checks.filter((c) => c.level !== "ok").length;
+      say(`\n${bad ? `${bad} 处需要处理。下一步：双击「2 回到上一个正常状态」看看它打算改什么。`
+                    : "一切正常，不需要做任何事。"}`);
+    } else if (action === "undo" || action === "undo-yes") {
+      const points = core.history.list().filter((r) => !r.broken);
+      if (!points.length) { say("还没有还原点 —— 没得退。"); process.exit(0); }
+      const target = points[0].id;
+      if (action === "undo") {
+        const dry = core.history.restore(target, { dryRun: true });
+        say(`打算回到：${dry.label}（${dry.at}）\n`);
+        for (const c of dry.changes) say(`  · ${c.action} ${c.skin ? `${c.skin}/` : ""}${c.file}`);
+        if (dry.missingAssets.length) say(`\n  注意：有 ${dry.missingAssets.length} 张背景图当时在、现在不在了，找不回来。`);
+        if (dry.kept.length) say(`\n  那之后新增的会原样保留（回退不删东西）：${dry.kept.join("、")}`);
+        say("\n以上还没有真的执行。觉得没问题就双击「3 确认回退」。");
+      } else {
+        recovery.checkpoint("before-undo", "回退之前的状态");
+        const result = core.history.restore(target);
+        say(result.ok ? `已回到「${result.label}」，改了 ${result.changes.length} 处。\n现在可以打开 dsh-skin 了。`
+                      : `没成功：${result.error}`);
+      }
+    } else if (action === "safe-on" || action === "safe-off") {
+      core.home.setSafeMode(action === "safe-on", "从急救文件里点的");
+      say(action === "safe-on"
+        ? "已设置：下次启动不套任何皮肤。\n你的皮肤一套都没丢，只是暂时不生效。现在去打开 dsh-skin。"
+        : "已恢复正常启动，皮肤会重新生效。");
+    } else {
+      say(`不认识的急救动作：${action}`);
+    }
+  } catch (error) {
+    say(`急救本身出错了：${error.message}`);
+    say("把这段文字整个发给任何一个 AI 助手，它能看懂。");
+  }
+  process.exit(0);
+}
 
 // 也必须在 ready 之前：要在做任何事之前知道上一次启动有没有走完。
 const boot = recovery.beginBoot();
@@ -332,6 +390,11 @@ function registerIpc() {
     return result;
   });
   ipcMain.handle("recovery:reveal-home", () => electronShell.openPath(paths.USER_ROOT));
+  ipcMain.handle("recovery:reveal-rescue", () => {
+    // 打开之前先确保它是最新的 —— 用户点开却发现是空的，比没有这个按钮更糟。
+    rescueScripts.write(process.execPath, app.isPackaged ? [] : [app.getAppPath()]);
+    return electronShell.openPath(require("node:path").join(paths.USER_ROOT, rescueScripts.DIR_NAME));
+  });
 
   ipcMain.handle("app:open-external", (_e, url) =>
     /^https?:\/\//i.test(String(url)) ? electronShell.openExternal(url) : null);
@@ -350,10 +413,16 @@ app.whenReady().then(() => {
   // 内置皮肤，会把"当前用的是内置皮肤"误报成"这套皮肤不存在"。
   core.home.recordInstall({
     builtinSkins: paths.builtinSkins(),
+    executable: process.execPath,
+    packaged: app.isPackaged,
     version: app.getVersion(),
     electron: process.versions.electron,
     platform: process.platform,
   });
+  // 每次启动重写急救文件：程序可能被挪过位置或升级过，写死的路径会失效 ——
+  // 而失效的急救文件比没有更糟，用户以为自己有后路。
+  // 开发模式下 execPath 是 Electron 自己，得把 app 目录也带上才跑得起来。
+  rescueScripts.write(process.execPath, app.isPackaged ? [] : [app.getAppPath()]);
   registerIpc();
   buildMenu();
   scheduleRotation();

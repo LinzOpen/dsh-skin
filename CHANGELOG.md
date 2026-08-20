@@ -26,6 +26,13 @@ Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Versions follo
   越界字段自动收拢；`dsh-skin doctor / history / undo / snapshot / safe-mode` 全部
   **不需要程序在运行**，读写的是同一批文件；`doctor --json` 的每条结论都带可执行的修复命令，
   写给 agent 读。程序里对应「恢复」页。见 `docs/agent-recovery.md`。
+- **零终端逃生通道** —— 程序每次启动在 `~/.dsh-skin/急救/` 写出五个**双击就能跑**的文件
+  （macOS `.command`、Windows `.bat`），调用的是程序自带的运行时，所以用户电脑上
+  **没装 Node 也能用**。这是给"程序打不开 + 不会用终端 + 没装开发工具"那类用户的唯一出路。
+- **`Dockerfile.test`** —— 一条命令在干净的 Linux 容器里跑全量（自检 + 单测 + 适配器 +
+  皮肤校验 + 真 Electron 端到端 + Linux 打包）。它验证的是"别人 clone 下来能不能跑"，
+  而不是"我这台机器能不能跑"。第一次跑就抓出一个 macOS 上 50% 概率不复现的 bug。
+- **README 全中文**，含三步安装图文和「第一次打开被系统拦住怎么办」。
 - **`AGENTS.md`** —— 在这个仓库里干活踩过的坑，含每一条的代价。
 - **`adapters/dsh-plugin`** — 给 DSH 渲染进程提供皮肤库的本地素材服务。
   服务端有自动化测试；挂进真实 DSH 那一步未验证。

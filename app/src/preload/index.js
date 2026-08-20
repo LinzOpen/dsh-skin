@@ -39,6 +39,7 @@ contextBridge.exposeInMainWorld("dshSkin", {
     safeMode: (on) => ipcRenderer.invoke("recovery:safe-mode", on),
     repair: () => ipcRenderer.invoke("recovery:repair"),
     revealHome: () => ipcRenderer.invoke("recovery:reveal-home"),
+    revealRescue: () => ipcRenderer.invoke("recovery:reveal-rescue"),
   },
   app: {
     openExternal: (url) => ipcRenderer.invoke("app:open-external", url),

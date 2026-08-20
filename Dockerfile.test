@@ -1,0 +1,46 @@
+# 在一个干净的 Linux 容器里跑全量测试。
+#
+# 为什么值得单独有一个文件：本机跑通不代表别人跑得通 —— 本机有攒了几个月的
+# node_modules、有全局装过的工具、有 macOS 特有的行为。这个镜像从零开始装，
+# 只用仓库里有的东西，所以它验证的是"别人 clone 下来能不能跑"，
+# 而不是"我这台机器能不能跑"。
+#
+#     docker build -f Dockerfile.test -t dsh-skin-test .
+#
+# 构建成功 = 全部测试通过。任何一步失败构建就红。
+FROM node:22-bookworm
+
+# Electron 在无头 Linux 上跑起来需要的系统库 + 一个虚拟显示服务。
+# 少任何一个的表现都是"进程起来就没了"，且不一定有清晰报错。
+# xauth 必须显式装：--no-install-recommends 会把它裁掉，而 xvfb-run 少了它
+# 直接报 "xauth command not found" —— 这条实测踩过。
+RUN apt-get update && apt-get install -y --no-install-recommends \
+      xvfb xauth libnss3 libatk1.0-0 libatk-bridge2.0-0 libcups2 libdrm2 \
+      libxkbcommon0 libxcomposite1 libxdamage1 libxfixes3 libxrandr2 \
+      libgbm1 libasound2 libpango-1.0-0 libcairo2 libgtk-3-0 \
+    && rm -rf /var/lib/apt/lists/*
+
+WORKDIR /app
+COPY package.json package-lock.json ./
+COPY packages ./packages
+COPY app ./app
+COPY adapters ./adapters
+RUN npm ci
+
+COPY . .
+
+# 仓库自检（生成物同步、皮肤有 license、文档链接、账号没漏）+ 单元测试 + 皮肤校验
+RUN npm run check
+
+# DSH 适配器的真 HTTP 测试
+RUN node --test adapters/dsh-plugin/test/*.test.js
+
+# 端到端：真 Electron、真自定义协议、真注入。
+# --no-sandbox：容器里 chrome-sandbox 不是 setuid root，Electron 宁可 abort 也不无沙箱跑。
+RUN xvfb-run -a npx electron --no-sandbox app/test/smoke.js
+RUN xvfb-run -a npx electron --no-sandbox packages/host/test/smoke.js
+
+# 打一个 Linux 包，证明打包链路在干净环境里也成立
+RUN npm run pack:linux
+
+RUN echo "全部通过" && ls -lh dist/
