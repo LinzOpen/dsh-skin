@@ -10,7 +10,7 @@
 
 const fs = require("node:fs");
 const path = require("node:path");
-const core = require("css-guard");
+const core = require("@linzopen/css-guard");
 const { zipSync } = require("./zip.js");
 
 const C = process.stdout.isTTY && !process.env.NO_COLOR

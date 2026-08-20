@@ -1,5 +1,5 @@
 {
-  "name": "css-guard",
+  "name": "@linzopen/css-guard",
   "version": "0.1.0",
   "description": "Refuse stylesheets that can steal what your users type. A linter and safe-injection engine for user-supplied CSS.",
   "license": "MIT",
@@ -43,5 +43,8 @@
   "homepage": "https://github.com/LinzOpen/dsh-skin#readme",
   "bugs": {
     "url": "https://github.com/LinzOpen/dsh-skin/issues"
+  },
+  "publishConfig": {
+    "access": "public"
   }
 }

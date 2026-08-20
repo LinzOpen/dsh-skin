@@ -124,8 +124,8 @@ and the text column, leave the subject band untouched. See the CSS it writes for
 ## Checking · 检查
 
 ```bash
-npx css-guard-cli validate skins/my-skin      # 人看的
-npx css-guard-cli validate skins --json       # 机器读的
+npx @linzopen/css-guard-cli validate skins/my-skin      # 人看的
+npx @linzopen/css-guard-cli validate skins --json       # 机器读的
 ```
 
 Exit code 1 when anything is an `error`. That is the CI gate.

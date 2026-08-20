@@ -17,7 +17,7 @@
 
 const fs = require("node:fs");
 const path = require("node:path");
-const { home } = require("css-guard");
+const { home } = require("@linzopen/css-guard");
 
 const DIR_NAME = "急救";
 

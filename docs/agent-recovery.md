@@ -47,15 +47,15 @@ No terminal knowledge, no colleague to ask, and the thing that used to answer qu
 <summary>会用终端的话（可选，效果一样）</summary>
 
 ```bash
-npx css-guard-cli doctor
+npx @linzopen/css-guard-cli doctor
 ```
 
 它会列出现在什么状况，每一条后面跟着该跑哪条命令。三条最常用的：
 
 ```bash
-npx css-guard-cli undo             # 看一眼「退回上一个还原点」会改什么（只是预演，不动手）
-npx css-guard-cli undo --yes       # 真的退回去
-npx css-guard-cli safe-mode on     # 下次启动不套任何皮肤
+npx @linzopen/css-guard-cli undo             # 看一眼「退回上一个还原点」会改什么（只是预演，不动手）
+npx @linzopen/css-guard-cli undo --yes       # 真的退回去
+npx @linzopen/css-guard-cli safe-mode on     # 下次启动不套任何皮肤
 ```
 
 </details>
@@ -65,9 +65,9 @@ npx css-guard-cli safe-mode on     # 下次启动不套任何皮肤
 把下面这段整个复制给它 —— 任何一个能跑命令的 AI 助手都能照着做：
 
 > 我在用一个叫 css-guard 的皮肤软件，出问题了。请你：
-> 1. 跑 `npx css-guard-cli doctor --json`，读它的输出。
+> 1. 跑 `npx @linzopen/css-guard-cli doctor --json`，读它的输出。
 > 2. 每一条 `level` 不是 `ok` 的结论里都带着 `fix.command`，告诉我它们分别是什么意思。
-> 3. 如果需要回退，先跑 `npx css-guard-cli undo`（这只是预演），把它要改什么念给我听，
+> 3. 如果需要回退，先跑 `npx @linzopen/css-guard-cli undo`（这只是预演），把它要改什么念给我听，
 >    我同意之后你再加 `--yes` 执行。
 > 4. 不要删除 `~/.css-guard` 下的任何文件，也不要删任何皮肤目录。恢复不需要删东西。
 
@@ -107,7 +107,7 @@ npx css-guard-cli safe-mode on     # 下次启动不套任何皮肤
 **4 · 你自己也会崩。** 所以在做任何有风险的事之前，显式存一个带说明的还原点：
 
 ```bash
-npx css-guard-cli snapshot -m "改配色之前"
+npx @linzopen/css-guard-cli snapshot -m "改配色之前"
 ```
 
 程序自己在套用皮肤、新建、导入、删除之前会自动存；但你在**命令行里**直接改文件时不会 ——

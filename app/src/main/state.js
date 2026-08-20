@@ -4,7 +4,7 @@
  * 让主进程的调用点不用改，同时保证程序和命令行看到的是同一份状态、
  * 同一套取值范围校正、同一套坏文件隔离逻辑。
  */
-const { home } = require("css-guard");
+const { home } = require("@linzopen/css-guard");
 
 module.exports = {
   read: () => home.readState(),

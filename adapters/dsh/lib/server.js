@@ -16,7 +16,7 @@
 import { createServer } from "node:http";
 import { createReadStream, existsSync, readFileSync, realpathSync, statSync } from "node:fs";
 import { extname, join, resolve, sep } from "node:path";
-import { scanLibrary, validateCss, resolveCss } from "css-guard";
+import { scanLibrary, validateCss, resolveCss } from "@linzopen/css-guard";
 
 const TYPES = {
   ".css": "text/css; charset=utf-8", ".js": "text/javascript; charset=utf-8",

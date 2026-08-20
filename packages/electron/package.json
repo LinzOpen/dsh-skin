@@ -1,5 +1,5 @@
 {
-  "name": "css-guard-electron",
+  "name": "@linzopen/css-guard-electron",
   "version": "0.1.0",
   "description": "Make any Electron window skinnable in three lines: register a scheme, point at a skin folder, apply.",
   "license": "MIT",
@@ -22,7 +22,7 @@
     "electron": ">=28"
   },
   "dependencies": {
-    "css-guard": "0.1.0"
+    "@linzopen/css-guard": "0.1.0"
   },
   "engines": {
     "node": ">=20"
@@ -35,5 +35,8 @@
   "homepage": "https://github.com/LinzOpen/dsh-skin#readme",
   "bugs": {
     "url": "https://github.com/LinzOpen/dsh-skin/issues"
+  },
+  "publishConfig": {
+    "access": "public"
   }
 }

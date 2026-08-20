@@ -9,7 +9,7 @@
  */
 const fs = require("node:fs");
 const path = require("node:path");
-const core = require("css-guard");
+const core = require("@linzopen/css-guard");
 const { skinRoots } = require("./paths");
 
 let cache = null;

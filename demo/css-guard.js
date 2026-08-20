@@ -314,7 +314,7 @@ module.exports = { validateCss, ASSET_TOKEN, stripComments };
  * 那么浏览器扩展、Web 应用的设置页、在线主题编辑器全都用不了它，
  * 而那恰恰是用户 CSS 真正被输入的地方。
  *
- *   import { validateCss } from "css-guard";      // 打包器会自动选到这个文件
+ *   import { validateCss } from "@linzopen/css-guard";      // 打包器会自动选到这个文件
  *   const report = validateCss(userStylesheet);
  *   if (!report.ok) refuse(report.findings);
  */

@@ -15,7 +15,7 @@
  */
 
 const fs = require("node:fs");
-const { home, history } = require("css-guard");
+const { home, history } = require("@linzopen/css-guard");
 
 const FAIL_THRESHOLD = 2;
 

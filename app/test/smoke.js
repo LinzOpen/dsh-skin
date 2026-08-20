@@ -164,7 +164,7 @@ app.whenReady().then(async () => {
 
     /* 8. 崩溃循环断路器：连续两次没走到界面就自动进安全模式。 */
     const recovery = require("../src/main/recovery");
-    const { home } = require("css-guard");
+    const { home } = require("@linzopen/css-guard");
     home.setSafeMode(false, undefined);
     fs.writeFileSync(home.paths().bootLock, JSON.stringify({ at: "x", fails: 1 }));
     const trip = recovery.beginBoot();
@@ -174,10 +174,10 @@ app.whenReady().then(async () => {
     home.setSafeMode(false, undefined);
 
     /* 9. 还原点是自动存的 —— 用户不需要记得，agent 也不需要。 */
-    const before = require("css-guard").history.list().length;
+    const before = require("@linzopen/css-guard").history.list().length;
     await new Promise((r) => setTimeout(r, 1100));   // 还原点 id 带时间戳，同秒会撞名
     recovery.checkpoint("smoke", "冒烟测试存的");
-    check("改动前会自动存还原点", require("css-guard").history.list().length === before + 1);
+    check("改动前会自动存还原点", require("@linzopen/css-guard").history.list().length === before + 1);
 
     /* 10. 零终端逃生：急救文件必须真的写出来、真的可执行、且路径真的能跑。
            这是给"程序打不开 + 不会用终端 + 没装 Node"那类用户的唯一出路，

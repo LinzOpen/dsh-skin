@@ -12,7 +12,7 @@
     "pack:linux": "electron-builder --linux --publish never"
   },
   "dependencies": {
-    "css-guard": "0.1.0"
+    "@linzopen/css-guard": "0.1.0"
   },
   "devDependencies": {
     "electron": "43.4.1",

@@ -7,7 +7,7 @@
  */
 const fs = require("node:fs");
 const path = require("node:path");
-const { home } = require("css-guard");
+const { home } = require("@linzopen/css-guard");
 
 const REPO_SKINS = path.join(__dirname, "..", "..", "..", "skins");
 // process.resourcesPath 只有在 Electron 里才有。空字符串 join 出来是相对路径 "skins"，

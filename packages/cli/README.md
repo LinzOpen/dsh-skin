@@ -1,11 +1,11 @@
 # css-guard-cli
 
 ```bash
-npx css-guard-cli validate skins        # 有 error 时退出码 1 —— 直接当 CI 闸门
-npx css-guard-cli validate skins --json # 机器可读
-npx css-guard-cli list skins
-npx css-guard-cli new my-skin --dir skins
-npx css-guard-cli pack skins/my-skin -o my-skin.zip
+npx @linzopen/css-guard-cli validate skins        # 有 error 时退出码 1 —— 直接当 CI 闸门
+npx @linzopen/css-guard-cli validate skins --json # 机器可读
+npx @linzopen/css-guard-cli list skins
+npx @linzopen/css-guard-cli new my-skin --dir skins
+npx @linzopen/css-guard-cli pack skins/my-skin -o my-skin.zip
 ```
 
 `validate` 是这个命令存在的理由：皮肤是别人 PR 进来的、会被注入进用户界面的代码，
@@ -19,13 +19,13 @@ npx css-guard-cli pack skins/my-skin -o my-skin.zip
 那正是它们存在的理由。
 
 ```bash
-npx css-guard-cli doctor          # 现在什么状况，每条结论带着修它的命令
-npx css-guard-cli doctor --json   # 同上，给 AI 助手读的结构化输出
-npx css-guard-cli undo            # 预演回退（不动手）
-npx css-guard-cli undo --yes      # 真的回退
-npx css-guard-cli history         # 列出还原点
-npx css-guard-cli snapshot -m 说明 # 现在存一个
-npx css-guard-cli safe-mode on    # 下次启动不套任何皮肤
+npx @linzopen/css-guard-cli doctor          # 现在什么状况，每条结论带着修它的命令
+npx @linzopen/css-guard-cli doctor --json   # 同上，给 AI 助手读的结构化输出
+npx @linzopen/css-guard-cli undo            # 预演回退（不动手）
+npx @linzopen/css-guard-cli undo --yes      # 真的回退
+npx @linzopen/css-guard-cli history         # 列出还原点
+npx @linzopen/css-guard-cli snapshot -m 说明 # 现在存一个
+npx @linzopen/css-guard-cli safe-mode on    # 下次启动不套任何皮肤
 ```
 
 `undo` 不加 `--yes` 永远只是预演；回退只写回和补建，从不删东西。

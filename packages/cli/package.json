@@ -1,5 +1,5 @@
 {
-  "name": "css-guard-cli",
+  "name": "@linzopen/css-guard-cli",
   "version": "0.1.0",
   "description": "Validate, scaffold and package css-guard skins from the command line.",
   "license": "MIT",
@@ -12,7 +12,7 @@
     "README.md"
   ],
   "dependencies": {
-    "css-guard": "0.1.0"
+    "@linzopen/css-guard": "0.1.0"
   },
   "engines": {
     "node": ">=20"
@@ -25,5 +25,8 @@
   "homepage": "https://github.com/LinzOpen/dsh-skin#readme",
   "bugs": {
     "url": "https://github.com/LinzOpen/dsh-skin/issues"
+  },
+  "publishConfig": {
+    "access": "public"
   }
 }

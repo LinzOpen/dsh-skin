@@ -12,7 +12,7 @@
 const { app, BrowserWindow, Menu, ipcMain, dialog, shell: electronShell } = require("electron");
 const fs = require("node:fs");
 const path = require("node:path");
-const core = require("css-guard");
+const core = require("@linzopen/css-guard");
 
 const paths = require("./paths");
 const state = require("./state");

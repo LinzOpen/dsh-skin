@@ -25,7 +25,7 @@
 const fs = require("node:fs");
 const path = require("node:path");
 const { pathToFileURL } = require("node:url");
-const core = require("css-guard");
+const core = require("@linzopen/css-guard");
 
 const DEFAULT_SCHEME = "cssguard";
 

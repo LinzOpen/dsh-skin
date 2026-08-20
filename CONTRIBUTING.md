@@ -29,9 +29,9 @@ revised.
 ### Submitting one
 
 ```bash
-npx css-guard-cli new my-skin --dir skins
+npx @linzopen/css-guard-cli new my-skin --dir skins
 # 改 skins/my-skin/skin.css，边改边在程序里看
-npx css-guard-cli validate skins/my-skin     # 必须零 error
+npx @linzopen/css-guard-cli validate skins/my-skin     # 必须零 error
 npm run lint                                  # 仓库自检
 ```
 
