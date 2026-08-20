@@ -25,13 +25,13 @@
 
 去 [下载页](https://github.com/LinzOpen/dsh-skin/releases/latest)，按你的电脑选一个：
 
-| 你的电脑 | 下载哪个 |
+| 你的电脑 | 下载这个文件 |
 |---|---|
-| Mac（2020 年之后买的，M1/M2/M3/M4） | `dsh-skin-*-arm64.dmg` |
-| Mac（更早的，Intel 芯片） | `dsh-skin-*-x64.dmg` |
-| Windows | `dsh-skin-Setup-*.exe` |
-| Windows（不想装、想放 U 盘里直接用） | `dsh-skin-*-win.zip` |
-| Linux | `dsh-skin-*.AppImage` |
+| Mac（2020 年之后买的，M1/M2/M3/M4 芯片） | `dsh-skin-<版本>-mac-arm64.dmg` |
+| Mac（更早的，Intel 芯片） | `dsh-skin-<版本>-mac-x64.dmg` |
+| Windows | `dsh-skin-Setup-<版本>-x64.exe` |
+| Windows（不想装，想放 U 盘里直接用） | `dsh-skin-<版本>-win-x64.zip` |
+| Linux | `dsh-skin-<版本>-linux-x86_64.AppImage` |
 
 > 不确定自己的 Mac 是哪种？左上角苹果标 → 「关于本机」，写着 **Apple M…** 就选 arm64，写着 **Intel** 就选 x64。
 

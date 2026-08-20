@@ -43,6 +43,10 @@ win:
     - target: zip
       arch: [x64]
 nsis:
+  # 名字里必须有 Setup。全局模板会打出 dsh-skin-0.1.0-win-x64.exe，
+  # 而同目录还有一个便携版 .zip —— 一个不懂技术的人分不出哪个是"装的那个"。
+  # Setup 是 Windows 上人人认得的词，这一个词省掉的求助比任何文档都多。
+  artifactName: ${productName}-Setup-${version}-${arch}.${ext}
   oneClick: false
   perMachine: false
   allowToChangeInstallationDirectory: true
