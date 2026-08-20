@@ -38,6 +38,14 @@ try {
   note(`皮肤生成物落后于 palette.json：\n${detail || "(子进程没有输出)"}`);
 }
 
+/* 1b. demo 的浏览器 bundle 不能落后于 core 源 */
+try {
+  execFileSync(process.execPath, [path.join(ROOT, "scripts", "build-demo.js"), "--check"],
+    { cwd: ROOT, stdio: "pipe" });
+} catch (error) {
+  note(`demo/css-guard.js 落后于 packages/core/src。跑 npm run build:demo 再提交。`);
+}
+
 /* 2. 每套皮肤的元数据 */
 const skinsDir = path.join(ROOT, "skins");
 for (const entry of fs.readdirSync(skinsDir, { withFileTypes: true })) {

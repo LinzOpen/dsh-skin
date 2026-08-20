@@ -1,0 +1,34 @@
+name: Deploy demo to Pages
+
+# demo/ 是纯静态页，直接发 GitHub Pages。
+# css-guard.js 是从 packages/core 生成的，CI 的仓库自检会盯着它不漂移。
+on:
+  push:
+    branches: [main]
+    paths: ["demo/**", ".github/workflows/pages.yml"]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# 同时只跑一个部署，新的取消旧的
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deploy.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/configure-pages@v5
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: demo
+      - id: deploy
+        uses: actions/deploy-pages@v4
