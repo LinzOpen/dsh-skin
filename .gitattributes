@@ -1,0 +1,20 @@
+# 全仓统一 LF，包括 Windows 检出。
+#
+# 这不是风格洁癖：skins/*/skin.css 是从 palette.json 生成的，CI 会逐字节比对
+# 两者是否同步。Windows 的 git 默认 core.autocrlf=true，检出时把 LF 换成 CRLF，
+# 而生成器产出的永远是 LF —— 于是 Windows 上的 CI 100% 报「生成物落后」，
+# 而在 macOS 和 Linux 上一切正常。第一次 CI 就是栽在这里。
+* text=auto eol=lf
+
+# 二进制别碰
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.webp binary
+*.gif binary
+*.icns binary
+*.ico binary
+*.woff binary
+*.woff2 binary
+*.zip binary
+*.dmg binary

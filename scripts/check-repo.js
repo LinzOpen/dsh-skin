@@ -28,7 +28,14 @@ try {
   execFileSync(process.execPath, [path.join(ROOT, "scripts", "build-skins.js"), "--check"],
     { cwd: ROOT, stdio: "pipe" });
 } catch (error) {
-  note(`皮肤生成物落后于 palette.json：\n${String(error.stdout || error.stderr || "").trim()}`);
+  // execFileSync 失败时 stdout / stderr 是 Buffer，而**空 Buffer 也是 truthy** ——
+  // 写成 `error.stdout || error.stderr` 会永远选中空的那个，于是"具体哪几套皮肤漂了"
+  // 一个字都印不出来。第一次 CI 在 Windows 上失败时就是这样，只看到一行标题。
+  const detail = [error.stdout, error.stderr]
+    .map((b) => (b ? String(b).trim() : ""))
+    .filter(Boolean)
+    .join("\n");
+  note(`皮肤生成物落后于 palette.json：\n${detail || "(子进程没有输出)"}`);
 }
 
 /* 2. 每套皮肤的元数据 */

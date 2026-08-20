@@ -46,14 +46,18 @@ jobs:
         run: npm run validate
 
       # 端到端：真的 Electron、真的自定义协议、真的注入。
-      # Linux runner 没有显示服务，Electron 起不来，所以套一层 xvfb。
+      # Linux runner 上要两个额外条件，缺一个都起不来：
+      #   · 没有显示服务 → 套一层 xvfb
+      #   · node_modules 里的 chrome-sandbox 不是 setuid root，Electron 宁可 abort
+      #     也不肯无沙箱跑（SIGTRAP）→ 显式 --no-sandbox。CI 容器本身就是隔离的，
+      #     这里放弃的那层沙箱在这个场景下没有保护对象。
       - name: End-to-end (Linux)
         if: runner.os == 'Linux'
         run: |
           sudo apt-get update
           sudo apt-get install -y xvfb
-          xvfb-run --auto-servernum npx electron app/test/smoke.js
-          xvfb-run --auto-servernum npx electron packages/host/test/smoke.js
+          xvfb-run --auto-servernum npx electron --no-sandbox app/test/smoke.js
+          xvfb-run --auto-servernum npx electron --no-sandbox packages/host/test/smoke.js
 
       - name: End-to-end (macOS / Windows)
         if: runner.os != 'Linux'
