@@ -1,0 +1,20 @@
+{
+  "id": "graphite",
+  "name": "石墨",
+  "version": "1.0.0",
+  "tagline": "只有明暗，没有颜色",
+  "author": "dsh-skin",
+  "license": "CC0-1.0",
+  "tags": [
+    "neutral",
+    "minimal",
+    "both"
+  ],
+  "accent": "#8a8f98",
+  "appearance": "both",
+  "swatch": [
+    "#f4f4f5",
+    "#131417",
+    "#8a8f98"
+  ]
+}

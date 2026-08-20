@@ -1,0 +1,28 @@
+{
+  "name": "@dsh-skin/app",
+  "version": "0.1.0",
+  "private": true,
+  "description": "dsh-skin — skin studio and skinnable shell for Electron / web UIs",
+  "license": "MIT",
+  "main": "src/main/index.js",
+  "scripts": {
+    "start": "electron .",
+    "pack:mac": "electron-builder --mac --publish never",
+    "pack:win": "electron-builder --win --publish never",
+    "pack:linux": "electron-builder --linux --publish never"
+  },
+  "dependencies": {
+    "@dsh-skin/core": "0.1.0"
+  },
+  "devDependencies": {
+    "electron": "38.8.6",
+    "electron-builder": "^26.0.12"
+  },
+  "author": {
+    "name": "dsh-skin contributors"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/LinzOpen/dsh-skin.git"
+  }
+}

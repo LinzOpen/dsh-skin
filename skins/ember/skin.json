@@ -1,0 +1,20 @@
+{
+  "id": "ember",
+  "name": "余烬",
+  "version": "1.0.0",
+  "tagline": "炭火将熄，橙红压得很低",
+  "author": "dsh-skin",
+  "license": "CC0-1.0",
+  "tags": [
+    "dark",
+    "warm",
+    "high-contrast"
+  ],
+  "accent": "#e07a3f",
+  "appearance": "both",
+  "swatch": [
+    "#f8f2ee",
+    "#16100d",
+    "#e07a3f"
+  ]
+}

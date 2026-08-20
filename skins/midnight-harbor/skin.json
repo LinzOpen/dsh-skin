@@ -1,0 +1,20 @@
+{
+  "id": "midnight-harbor",
+  "name": "午夜港湾",
+  "version": "1.0.0",
+  "tagline": "深蓝夜港，暖金点缀",
+  "author": "dsh-skin",
+  "license": "CC0-1.0",
+  "tags": [
+    "dark",
+    "blue",
+    "calm"
+  ],
+  "accent": "#d9b56a",
+  "appearance": "both",
+  "swatch": [
+    "#eef3fa",
+    "#0b1626",
+    "#d9b56a"
+  ]
+}

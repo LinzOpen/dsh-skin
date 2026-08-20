@@ -1,0 +1,56 @@
+appId: io.github.linzopen.dsh-skin
+productName: dsh-skin
+copyright: MIT licensed
+directories:
+  buildResources: build
+  output: ../dist
+
+# app.asar 里只放程序自己的代码。皮肤放在 asar 外面（extraResources），
+# 因为用户要能打开那个目录去看、去改、去照着写自己的皮肤 —— asar 里的东西
+# 打不开也改不了，那等于把"皮肤格式是公开的"这件事作废了。
+files:
+  - src/**/*
+  - package.json
+  - "!**/*.map"
+extraResources:
+  - from: ../skins
+    to: skins
+    filter: ["**/*", "!**/palette.json"]
+
+# 没有代码签名证书。下面两个开关让 electron-builder 不去找证书、也不去公证，
+# 否则本地和 CI 都会在打包最后一步失败。代价是用户第一次打开要手动放行，
+# README 的「第一次打开」一节写了怎么放行。
+mac:
+  category: public.app-category.developer-tools
+  target:
+    - target: dmg
+      arch: [arm64, x64]
+    - target: zip
+      arch: [arm64, x64]
+  identity: null
+  notarize: false
+dmg:
+  writeUpdateInfo: false
+
+win:
+  target:
+    - target: nsis
+      arch: [x64]
+    - target: zip
+      arch: [x64]
+nsis:
+  oneClick: false
+  perMachine: false
+  allowToChangeInstallationDirectory: true
+  # 便携版和安装版共用同一个 ~/.dsh-skin，卸载时不删用户自己的皮肤。
+  deleteAppDataOnUninstall: false
+
+linux:
+  category: Utility
+  target:
+    - target: AppImage
+      arch: [x64]
+    - target: tar.gz
+      arch: [x64]
+
+publish: null

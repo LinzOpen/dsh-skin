@@ -1,0 +1,41 @@
+name: Skin submission
+description: 想贡献一套皮肤（先开 issue 讨论，或者直接发 PR 也行）
+labels: [skin]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        直接发 PR 也完全可以 —— 这个模板是给「想先问问合不合适」的情况准备的。
+  - type: input
+    id: name
+    attributes: { label: 皮肤名 / Skin name }
+    validations: { required: true }
+  - type: dropdown
+    id: assets
+    attributes:
+      label: 用到素材了吗 / Does it ship assets
+      options:
+        - 纯 CSS，零图片
+        - 有图片 / 字体
+    validations: { required: true }
+  - type: input
+    id: license
+    attributes:
+      label: 许可 / License
+      description: SPDX 标识。带素材的话，请说明你凭什么有权公开它们。
+      placeholder: CC0-1.0
+    validations: { required: true }
+  - type: checkboxes
+    id: rights
+    attributes:
+      label: 确认
+      options:
+        - label: 我有权公开这套皮肤里的每一份素材（不是从壁纸站/同人站拿的官方立绘或他人画作）
+          required: true
+        - label: "`npx @dsh-skin/cli validate` 零 error"
+          required: true
+  - type: textarea
+    id: shots
+    attributes:
+      label: 截图 / Screenshots
+      description: 明暗两种都要。

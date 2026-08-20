@@ -1,0 +1,74 @@
+<!doctype html>
+<html lang="zh-CN">
+<meta charset="utf-8">
+<meta http-equiv="Content-Security-Policy"
+      content="default-src 'none'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' dshskin: data:; frame-src 'self'">
+<title>dsh-skin</title>
+<link rel="stylesheet" href="app.css">
+
+<header class="top">
+  <div class="logo">dsh<em>·</em>skin</div>
+  <div class="tabs" role="tablist">
+    <button role="tab" data-view="studio" aria-selected="true">工作室</button>
+    <button role="tab" data-view="shellview" aria-selected="false">外壳</button>
+  </div>
+  <div class="grow"></div>
+  <button class="ghost" id="scheme" aria-pressed="false" title="切换预览的明暗，不影响你的系统设置">预览：跟随系统</button>
+</header>
+
+<!-- ── 工作室 ─────────────────────────────────────────────────────── -->
+<main class="view" id="studio" data-active="1">
+  <section class="pane">
+    <header><span class="grow">皮肤库</span><span id="count"></span></header>
+    <div class="scroll" id="list"></div>
+    <div class="toolbar">
+      <button class="ghost" id="new">新建皮肤</button>
+      <button class="ghost" id="import">导入素材…</button>
+      <button class="ghost" id="reveal">在访达中显示</button>
+      <button class="ghost" id="refresh">重新扫描</button>
+      <button class="ghost" id="apply" style="flex-basis:100%">套用到外壳窗口</button>
+    </div>
+  </section>
+
+  <section class="pane" id="preview-pane">
+    <header>
+      <span class="grow">实时预览 · 内置沙盒（不需要装任何别的软件）</span>
+      <button class="ghost" id="next" hidden>换下一张背景</button>
+    </header>
+    <div class="stage"><div class="frame"><iframe id="frame" src="sandbox.html" title="预览"></iframe></div></div>
+  </section>
+
+  <section class="pane">
+    <header>检查</header>
+    <div class="scroll" id="report"></div>
+  </section>
+</main>
+
+<!-- ── 外壳 ───────────────────────────────────────────────────────── -->
+<main class="view" id="shellview">
+  <div class="scroll">
+    <div class="shellwrap">
+      <h2>把一个界面装进带皮肤的窗口</h2>
+      <p>填一个网址 —— 多半是你本地跑着的 Web UI。当前选中的皮肤会注入进那个窗口，
+         切换皮肤时所有外壳窗口一起换。只注入 CSS，从不注入脚本。</p>
+      <div class="urlbar">
+        <input id="url" type="text" placeholder="http://127.0.0.1:3000" spellcheck="false" autocomplete="off">
+        <button class="primary" id="open">打开</button>
+      </div>
+      <p class="hint">带 error 的皮肤不会被注入 —— 检查面板会说明是哪一条。</p>
+
+      <div class="list">
+        <h3>打开着的</h3>
+        <div id="open-list"></div>
+      </div>
+      <div class="list">
+        <h3>最近用过</h3>
+        <div id="recent-list"></div>
+      </div>
+    </div>
+  </div>
+</main>
+
+<div class="toast" id="toast"></div>
+<script src="app.js"></script>
+</html>

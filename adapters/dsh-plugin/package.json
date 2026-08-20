@@ -1,0 +1,17 @@
+{
+  "name": "dsh-skin-adapter",
+  "version": "0.1.0",
+  "description": "DSH (DeepSeek Harness) plugin that serves a dsh-skin library to the DSH renderer.",
+  "license": "MIT",
+  "type": "module",
+  "main": "lib/index.js",
+  "exports": {
+    ".": "./lib/index.js",
+    "./client": "./lib/client.js",
+    "./server": "./lib/server.js",
+    "./package.json": "./package.json"
+  },
+  "dsh": {
+    "client": { "inject": [], "platform": "web", "immediately": true }
+  }
+}

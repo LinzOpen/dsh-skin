@@ -1,0 +1,132 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>预览沙盒</title>
+<!--
+  实时预览用的假界面。
+
+  为什么要有它：没有它，"这套皮肤长什么样"只能靠装上真宿主再看一眼 —— 那意味着
+  下载了这个程序但没装 DSH / Kimi Code 的人，打开只看到一个空壳。这个沙盒让皮肤
+  在**零依赖**的情况下就能看到效果。
+
+  它刻意用的是真实宿主那套变量名（--color-surface / --color-composer-bg / …）和
+  真实的挂载点 id（#app）。所以在这里对得上的皮肤，装到真宿主上多半也对得上；
+  对不上的，在这里就能看出来。
+-->
+<style>
+  * { box-sizing: border-box; margin: 0; }
+  html, body { height: 100%; }
+  body { font: 14px/1.6 -apple-system, "PingFang SC", "Microsoft YaHei", system-ui, sans-serif;
+         color: var(--color-text, #1a1d29); background: var(--color-bg, #f6f7fb); }
+
+  /* 挂载点。皮肤铺背景铺的就是它。 */
+  #app { height: 100%; display: grid; grid-template-columns: 232px 1fr; }
+
+  .side { padding: 14px 12px; display: flex; flex-direction: column; gap: 4px;
+          background: var(--color-sidebar-bg, transparent);
+          border-right: 1px solid var(--color-line, rgba(0,0,0,.1)); }
+  .brand { font-weight: 650; letter-spacing: .02em; padding: 6px 10px 14px;
+           color: var(--color-text-strong, inherit); }
+  .brand em { font-style: normal; color: var(--color-accent, #4c6ef5); }
+  .row { padding: 7px 10px; border-radius: 8px; color: var(--color-text-muted, inherit);
+         white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .row.on { background: var(--color-selected, rgba(0,0,0,.06)); color: var(--color-text-strong, inherit); }
+  .side .spacer { flex: 1; }
+
+  .main { position: relative; display: flex; flex-direction: column; min-width: 0; min-height: 0; }
+  .bar { padding: 12px 20px; display: flex; align-items: center; gap: 10px;
+         border-bottom: 1px solid var(--color-line, rgba(0,0,0,.1)); }
+  .bar .title { font-weight: 600; }
+  .bar .chip { margin-left: auto; font-size: 12px; padding: 3px 10px; border-radius: 999px;
+               background: var(--color-accent-soft, rgba(0,0,0,.06));
+               border: 1px solid var(--color-accent-bd, transparent);
+               color: var(--color-accent, inherit); }
+
+  /* min-height:0 不能省：flex 子项默认 min-height:auto，内容一长就不肯收缩，
+     结果是把下面的输入框整个顶出可视区 —— 而且只在内容够长时才复现。 */
+  .stream { flex: 1; min-height: 0; overflow: auto; padding: 22px 20px 120px; display: flex; flex-direction: column; gap: 16px; }
+  .msg { max-width: 620px; }
+  .msg.me { margin-left: auto; padding: 10px 14px; border-radius: 14px 14px 4px 14px;
+            background: var(--color-user-bubble-bg, rgba(0,0,0,.05)); }
+  .msg.ai { padding: 14px 16px; border-radius: 14px 14px 14px 4px;
+            background: var(--color-surface, rgba(255,255,255,.7));
+            border: 1px solid var(--color-line, rgba(0,0,0,.08)); }
+  .msg h3 { font-size: 14px; margin-bottom: 6px; color: var(--color-text-strong, inherit); }
+  .msg p { color: var(--color-text-muted, inherit); }
+  pre { margin-top: 10px; padding: 12px 14px; border-radius: 10px; overflow-x: auto;
+        white-space: pre-wrap; overflow-wrap: anywhere;
+        background: var(--color-surface-sunken, rgba(0,0,0,.05));
+        border: 1px solid var(--color-line, rgba(0,0,0,.08));
+        font: 12.5px/1.6 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; }
+  code { color: var(--color-accent, inherit); }
+
+  .composer { margin: 0 20px 20px; padding: 10px 12px; border-radius: 14px;
+              background: var(--color-composer-bg, rgba(255,255,255,.8));
+              border: 1px solid var(--color-composer-line, rgba(0,0,0,.15));
+              display: flex; gap: 10px; align-items: center; }
+  .composer input { flex: 1; border: 0; outline: 0; background: transparent; font: inherit;
+                    color: var(--color-text, inherit); }
+  .composer input::placeholder { color: var(--color-text-faint, rgba(0,0,0,.35)); }
+  .send { border: 0; border-radius: 9px; padding: 7px 16px; font: inherit; font-weight: 600;
+          cursor: default; background: var(--color-send-bg, #4c6ef5);
+          color: var(--color-send-icon, #fff); }
+
+  .sheet { position: absolute; right: 18px; bottom: 84px; width: 226px; padding: 13px;
+           border-radius: 12px; font-size: 13px;
+           background: var(--color-surface-overlay, #fff);
+           border: 1px solid var(--color-line-strong, rgba(0,0,0,.14));
+           box-shadow: 0 18px 44px rgba(0,0,0,.22); }
+  .sheet b { display: block; margin-bottom: 6px; color: var(--color-text-strong, inherit); }
+  .sheet label { display: block; color: var(--color-text-muted, inherit); margin-bottom: 8px; }
+  .sheet input[type=text] { width: 100%; padding: 6px 9px; border-radius: 7px; font: inherit;
+                            color: var(--color-text, inherit);
+                            border: 1px solid var(--color-line, rgba(0,0,0,.15));
+                            background: var(--color-surface-raised, #fff); }
+  ::selection { background: var(--p-selection, rgba(76,110,245,.28)); }
+</style>
+
+<div id="app">
+  <nav class="side">
+    <div class="brand">dsh<em>·</em>预览沙盒</div>
+    <div class="row on">今天的对话</div>
+    <div class="row">皮肤格式怎么写</div>
+    <div class="row">为什么不能用 infinite 动画</div>
+    <div class="row">宿主升级后皮肤失效</div>
+    <div class="spacer"></div>
+    <div class="row">设置</div>
+  </nav>
+
+  <section class="main">
+    <header class="bar">
+      <span class="title">预览沙盒</span>
+      <span class="chip">这不是真的对话</span>
+    </header>
+
+    <div class="stream">
+      <div class="msg me">这套皮肤在深色下读得清吗？</div>
+      <article class="msg ai">
+        <h3>能，而且这一屏就是判据</h3>
+        <p>侧栏、正文气泡、代码块、输入框、弹窗 —— 真实宿主里最容易糊掉的五处都在这一屏里。
+           哪一处的字看不清，就是那一处的变量没给到。</p>
+        <pre><code>#app</code> { background-image: var(--dsh-backdrop); }
+<code>/* 素材写 __SKIN__/bg.png */</code></pre>
+      </article>
+      <div class="msg me">那我怎么知道皮肤真的挂上了？</div>
+      <article class="msg ai">
+        <p>右边的检查面板会读回<b>真正生效</b>的变量值。它不是在念你写了什么，
+           是在念浏览器算出来的结果 —— 这两者不一样的时候，问题多半是被更晚的规则盖掉了。</p>
+      </article>
+    </div>
+
+    <div class="sheet" role="dialog" aria-label="示例弹窗">
+      <b>示例弹窗</b>
+      <label>弹窗和菜单用的是另一组变量，深色下最容易出白底白字。</label>
+      <input type="text" value="输入框里的文字">
+    </div>
+
+    <div class="composer">
+      <input type="text" placeholder="输入点什么，看看输入框的底色和占位符颜色…">
+      <button class="send">发送</button>
+    </div>
+  </section>
+
+</div>

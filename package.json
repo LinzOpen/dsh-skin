@@ -1,0 +1,36 @@
+{
+  "name": "dsh-skin-monorepo",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Skin engine, studio app and SDK for Electron / web UIs",
+  "license": "MIT",
+  "workspaces": [
+    "packages/*",
+    "app"
+  ],
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "start": "npm start --workspace @dsh-skin/app",
+    "build:skins": "node scripts/build-skins.js",
+    "test": "node --test packages/core/test/*.test.js",
+    "validate": "node packages/cli/bin/dsh-skin.js validate skins",
+    "lint": "node scripts/check-repo.js",
+    "check": "npm run lint && npm test && npm run validate",
+    "pack:mac": "npm run pack:mac --workspace @dsh-skin/app",
+    "pack:win": "npm run pack:win --workspace @dsh-skin/app",
+    "pack:linux": "npm run pack:linux --workspace @dsh-skin/app",
+    "test:adapter": "node --test adapters/dsh-plugin/test/*.test.js",
+    "test:e2e": "electron app/test/smoke.js && electron packages/host/test/smoke.js",
+    "icon": "electron scripts/make-icon.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/LinzOpen/dsh-skin.git"
+  },
+  "bugs": {
+    "url": "https://github.com/LinzOpen/dsh-skin/issues"
+  },
+  "homepage": "https://github.com/LinzOpen/dsh-skin#readme"
+}

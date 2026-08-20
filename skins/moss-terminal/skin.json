@@ -1,0 +1,20 @@
+{
+  "id": "moss-terminal",
+  "name": "苔痕",
+  "version": "1.0.0",
+  "tagline": "老终端的绿，长了一层苔",
+  "author": "dsh-skin",
+  "license": "CC0-1.0",
+  "tags": [
+    "dark",
+    "green",
+    "terminal"
+  ],
+  "accent": "#5fbf7d",
+  "appearance": "both",
+  "swatch": [
+    "#eef4ee",
+    "#0c1611",
+    "#5fbf7d"
+  ]
+}

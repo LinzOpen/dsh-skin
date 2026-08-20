@@ -1,0 +1,153 @@
+/* 苔痕 — 老终端的绿，长了一层苔
+ *
+ * 由 palette.json 生成，别直接改这个文件：改 palette.json，然后
+ *     npm run build:skins
+ *
+ * 这套皮肤只做三件事：覆盖 :root 上的颜色变量、给 #app / #root 铺一层
+ * 纯 CSS 的背景、把输入框和弹窗的底色调成半透明。没有图片、没有动画、
+ * 没有一个编译产物类名 —— 宿主升级之后它照样在。
+ */
+
+/* ── 浅色 ── */
+:root,
+html[data-color-scheme="light"],
+html[data-color-scheme="system"] {
+  --color-bg: #eef4ee;
+  --bg: rgba(238, 244, 238, 0.35);
+  --canvas: rgba(238, 244, 238, 0.55);
+  --color-surface: rgba(255, 255, 255, 0.78);
+  --color-surface-raised: rgba(255, 255, 255, 0.92);
+  --color-surface-overlay: rgba(255, 255, 255, 0.97);
+  --color-surface-sunken: rgba(240, 240, 240, 0.7);
+  --color-surface-deep: rgba(230, 230, 230, 0.65);
+  --color-sidebar-bg: rgba(238, 244, 238, 0.42);
+  --color-sidebar-tint: rgba(47, 125, 79, 0.1);
+  --panel: rgba(255, 255, 255, 0.78);
+  --panel2: rgba(47, 125, 79, 0.09);
+  --color-well: rgba(237, 237, 237, 0.7);
+  --color-menu-bg: rgba(255, 255, 255, 0.97);
+  --color-composer-bg: rgba(255, 255, 255, 0.92);
+  --color-user-bubble-bg: rgba(207, 225, 213, 0.9);
+  --color-text: #16281c;
+  --color-text-strong: #111e15;
+  --color-text-muted: rgba(22, 40, 28, 0.68);
+  --color-text-faint: rgba(22, 40, 28, 0.42);
+  --dim: rgba(22, 40, 28, 0.68);
+  --muted: rgba(22, 40, 28, 0.5);
+  --faint: rgba(22, 40, 28, 0.32);
+  --color-accent: #2f7d4f;
+  --blue: #2f7d4f;
+  --logo: #3f6b4a;
+  --color-accent-hover: #276741;
+  --blue2: #276741;
+  --color-accent-soft: rgba(47, 125, 79, 0.16);
+  --soft: rgba(47, 125, 79, 0.16);
+  --bluebg: rgba(47, 125, 79, 0.14);
+  --color-accent-bd: rgba(47, 125, 79, 0.45);
+  --bd: rgba(47, 125, 79, 0.45);
+  --blueln: rgba(47, 125, 79, 0.4);
+  --color-line: rgba(57, 99, 74, 0.14);
+  --color-line-strong: rgba(57, 99, 74, 0.26);
+  --color-composer-line: rgba(47, 125, 79, 0.5);
+  --color-composer-focus-line: #2f7d4f;
+  --color-hover: rgba(47, 125, 79, 0.12);
+  --color-selected: rgba(47, 125, 79, 0.2);
+  --color-subtle: rgba(47, 125, 79, 0.08);
+  --color-send-bg: #2f7d4f;
+  --color-send-bg-hover: #276741;
+  --color-send-icon: #ffffff;
+  --color-inline-code-bg: rgba(47, 125, 79, 0.12);
+  --p-selection: rgba(47, 125, 79, 0.28);
+}
+
+/* ── 深色 ── */
+html[data-color-scheme="dark"],
+:root[data-theme="dark"],
+html.dark,
+body.dark {
+  --color-bg: #0c1611;
+  --bg: rgba(12, 22, 17, 0.35);
+  --canvas: rgba(12, 22, 17, 0.55);
+  --color-surface: rgba(21, 39, 32, 0.74);
+  --color-surface-raised: rgba(44, 61, 54, 0.86);
+  --color-surface-overlay: rgba(54, 69, 63, 0.97);
+  --color-surface-sunken: rgba(17, 32, 26, 0.78);
+  --color-surface-deep: rgba(16, 29, 24, 0.7);
+  --color-sidebar-bg: rgba(12, 22, 17, 0.42);
+  --color-sidebar-tint: rgba(95, 191, 125, 0.1);
+  --panel: rgba(21, 39, 32, 0.74);
+  --panel2: rgba(95, 191, 125, 0.09);
+  --color-well: rgba(17, 31, 26, 0.7);
+  --color-menu-bg: rgba(49, 65, 59, 0.97);
+  --color-composer-bg: rgba(40, 56, 50, 0.92);
+  --color-user-bubble-bg: rgba(35, 69, 47, 0.9);
+  --color-text: #dceee2;
+  --color-text-strong: #e5f2e9;
+  --color-text-muted: rgba(220, 238, 226, 0.68);
+  --color-text-faint: rgba(220, 238, 226, 0.42);
+  --dim: rgba(220, 238, 226, 0.68);
+  --muted: rgba(220, 238, 226, 0.5);
+  --faint: rgba(220, 238, 226, 0.32);
+  --color-accent: #5fbf7d;
+  --blue: #5fbf7d;
+  --logo: #8fd6a5;
+  --color-accent-hover: #7ccb94;
+  --blue2: #7ccb94;
+  --color-accent-soft: rgba(95, 191, 125, 0.16);
+  --soft: rgba(95, 191, 125, 0.16);
+  --bluebg: rgba(95, 191, 125, 0.14);
+  --color-accent-bd: rgba(95, 191, 125, 0.45);
+  --bd: rgba(95, 191, 125, 0.45);
+  --blueln: rgba(95, 191, 125, 0.4);
+  --color-line: rgba(127, 191, 151, 0.16);
+  --color-line-strong: rgba(127, 191, 151, 0.3);
+  --color-composer-line: rgba(95, 191, 125, 0.5);
+  --color-composer-focus-line: #5fbf7d;
+  --color-hover: rgba(95, 191, 125, 0.12);
+  --color-selected: rgba(95, 191, 125, 0.2);
+  --color-subtle: rgba(95, 191, 125, 0.08);
+  --color-send-bg: #5fbf7d;
+  --color-send-bg-hover: #7ccb94;
+  --color-send-icon: #0c1611;
+  --color-inline-code-bg: rgba(95, 191, 125, 0.12);
+  --p-selection: rgba(95, 191, 125, 0.28);
+}
+
+/* ── 背景 ──
+   铺在挂载点上而不是 body::before：z-index:-1 的伪元素要能被看见，得 html、body
+   和每一层祖先都不挡它 —— 实测在真实宿主里挡住了，表现是"皮肤装了但界面一片空白"。
+   直接画成挂载点的 background-image 就没有这个问题。 */
+html:has(#app, #root) { background-color: #eef4ee; }
+#app,
+#root {
+  background-color: var(--color-bg);
+  background-image: radial-gradient(110% 85% at 10% 5%, #ffffff 0%, rgba(255,255,255,0) 55%), radial-gradient(85% 65% at 90% 100%, #dcecdf 0%, rgba(220,236,223,0) 62%), linear-gradient(170deg, #e6f0e8 0%, #eef4ee 58%, #f6faf6 100%);
+  background-size: cover;
+  background-position: center center;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+}
+
+html[data-color-scheme="dark"] #app,
+html[data-color-scheme="dark"] #root,
+:root[data-theme="dark"] #app,
+:root[data-theme="dark"] #root,
+html.dark #app,
+html.dark #root,
+body.dark #app,
+body.dark #root {
+  background-image: radial-gradient(110% 85% at 12% 6%, #162c20 0%, rgba(22,44,32,0) 58%), radial-gradient(85% 65% at 88% 96%, #10241a 0%, rgba(16,36,26,0) 64%), linear-gradient(172deg, #0e1a14 0%, #0c1611 60%, #080f0b 100%);
+}
+
+/* ── 承载文字的地方补半透明底 ──
+   背景铺开之后正文直接压在画面上会读不清，但整块加回不透明底又把背景盖没了。
+   只给真正需要底才读得清的元素加，且用半透明，背景仍然透得出来。
+   钩的是标签名和 role，不是类名 —— 类名会随宿主构建变，role 不会。 */
+#app :is(input, textarea, select),
+#root :is(input, textarea, select),
+#app :is([role=dialog], [role=menu], [role=listbox], [role=tooltip]),
+#root :is([role=dialog], [role=menu], [role=listbox], [role=tooltip]),
+#app :is(pre, code),
+#root :is(pre, code) {
+  background-color: var(--color-surface-raised);
+}

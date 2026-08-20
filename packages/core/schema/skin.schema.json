@@ -1,0 +1,84 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/LinzOpen/dsh-skin/schema/skin.schema.json",
+  "title": "dsh-skin skin.json",
+  "description": "Manifest for one skin. Every field except `name` is optional; `id` falls back to the directory name.",
+  "type": "object",
+  "required": [
+    "name"
+  ],
+  "additionalProperties": true,
+  "properties": {
+    "id": {
+      "type": "string",
+      "pattern": "^[a-z0-9][a-z0-9-]{0,63}$",
+      "description": "Stable identifier. Lowercase letters, digits and hyphens only — it is used in URLs and file paths. Defaults to the folder name."
+    },
+    "name": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Display name."
+    },
+    "version": {
+      "type": "string",
+      "description": "Semver-ish version string."
+    },
+    "tagline": {
+      "type": "string",
+      "description": "One line shown under the name in the gallery."
+    },
+    "author": {
+      "type": "string"
+    },
+    "license": {
+      "type": "string",
+      "description": "SPDX identifier. Required for skins submitted to this repo."
+    },
+    "homepage": {
+      "type": "string",
+      "format": "uri"
+    },
+    "tags": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "accent": {
+      "type": "string",
+      "description": "Accent colour, used for the gallery card border."
+    },
+    "appearance": {
+      "enum": [
+        "light",
+        "dark",
+        "both"
+      ],
+      "default": "both",
+      "description": "Which colour schemes this skin defines. `both` means it handles the host's light and dark modes."
+    },
+    "assets": {
+      "type": "string",
+      "default": "assets",
+      "description": "Asset sub-directory, relative to the skin folder. `__SKIN__/x.png` resolves here first, then the skin root."
+    },
+    "preview": {
+      "type": "string",
+      "description": "Preview image, relative to the skin folder."
+    },
+    "requires": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Host hooks this skin depends on, e.g. \"#app\". Informational — used by the studio to warn before applying."
+    },
+    "backdrops": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Optional list of background images, relative to the skin folder. The host picks one and exposes it as the CSS variable --dsh-backdrop; with more than one it can rotate through them without repeats."
+    }
+  }
+}

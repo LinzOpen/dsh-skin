@@ -1,0 +1,47 @@
+name: Bug report
+description: 有东西不工作 — 程序、SDK、CLI 或适配器
+labels: [bug]
+body:
+  - type: textarea
+    id: what
+    attributes:
+      label: 发生了什么 / What happened
+      description: 请写你**看到**的，而不是你猜的原因。
+    validations: { required: true }
+  - type: textarea
+    id: expected
+    attributes:
+      label: 你以为会发生什么 / What you expected
+    validations: { required: true }
+  - type: textarea
+    id: steps
+    attributes:
+      label: 怎么复现 / Steps
+      placeholder: |
+        1. 打开程序
+        2. 选中「午夜港湾」
+        3. …
+    validations: { required: true }
+  - type: dropdown
+    id: surface
+    attributes:
+      label: 哪一块 / Which part
+      options:
+        - 桌面程序 · 工作室
+        - 桌面程序 · 外壳
+        - "@dsh-skin/host (SDK)"
+        - "@dsh-skin/cli"
+        - DSH 适配器
+        - 皮肤本身
+    validations: { required: true }
+  - type: input
+    id: version
+    attributes:
+      label: 版本和系统 / Version and OS
+      placeholder: v0.1.0 · macOS 15 arm64
+    validations: { required: true }
+  - type: textarea
+    id: skin
+    attributes:
+      label: 相关的皮肤 / The skin, if one is involved
+      description: 显示不对的皮肤，把 skin.css 贴上来或者把整个目录打包附上，比任何描述都省事。

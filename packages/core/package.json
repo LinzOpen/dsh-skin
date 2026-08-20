@@ -1,0 +1,15 @@
+{
+  "name": "@dsh-skin/core",
+  "version": "0.1.0",
+  "description": "Skin manifest parsing, security linting and library scanning. No Electron, no DOM, no dependencies.",
+  "license": "MIT",
+  "main": "src/index.js",
+  "exports": {
+    ".": "./src/index.js",
+    "./schema": "./schema/skin.schema.json",
+    "./package.json": "./package.json"
+  },
+  "files": ["src", "schema", "README.md"],
+  "keywords": ["skin", "theme", "electron", "css", "lint"],
+  "engines": { "node": ">=20" }
+}

@@ -1,0 +1,14 @@
+version: 2
+updates:
+  # 这个项目的运行时依赖只有 Electron（devDependency）。更新频率按月就够，
+  # 每周会淹掉一个只有几个人看的仓库的通知。
+  - package-ecosystem: npm
+    directory: /
+    schedule: { interval: monthly }
+    open-pull-requests-limit: 5
+    groups:
+      electron:
+        patterns: ["electron", "electron-builder"]
+  - package-ecosystem: github-actions
+    directory: /
+    schedule: { interval: monthly }

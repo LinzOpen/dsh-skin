@@ -1,0 +1,62 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+# 同一分支上新的推送取消旧的跑批 —— 三个平台的矩阵，重复排队很浪费。
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  check:
+    name: ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest, windows-latest]
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+
+      - run: npm ci
+
+      # 仓库约定：生成物没落后、每套皮肤都声明了 license、文档链接没断、
+      # 个人账号没漏进任何文件。
+      - name: Repo self-check
+        run: npm run lint
+
+      - name: Unit tests
+        run: npm test
+
+      - name: DSH adapter server tests
+        run: node --test adapters/dsh-plugin/test/*.test.js
+
+      # 皮肤检查器对着仓库自带的皮肤跑一遍。有 error 就是退出码 1。
+      - name: Validate bundled skins
+        run: npm run validate
+
+      # 端到端：真的 Electron、真的自定义协议、真的注入。
+      # Linux runner 没有显示服务，Electron 起不来，所以套一层 xvfb。
+      - name: End-to-end (Linux)
+        if: runner.os == 'Linux'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y xvfb
+          xvfb-run --auto-servernum npx electron app/test/smoke.js
+          xvfb-run --auto-servernum npx electron packages/host/test/smoke.js
+
+      - name: End-to-end (macOS / Windows)
+        if: runner.os != 'Linux'
+        run: |
+          npx electron app/test/smoke.js
+          npx electron packages/host/test/smoke.js

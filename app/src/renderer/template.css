@@ -1,0 +1,42 @@
+/* 新皮肤
+   ————————————————————————————————————————————————————————————
+   照着下面四条写，宿主升级了皮肤也还在：
+     · 只覆盖 :root 上的变量
+     · 只钩 #app / #root 这样的 id，和 [role=dialog] 这样的语义属性
+     · 绝不钩 .aB3x_9f 这类编译产物类名 —— 它每次构建都会变
+     · 绝不用 infinite 动画 —— 一条全窗口的永动动画能把宿主拖到 100% CPU
+   素材写 url("__SKIN__/xxx.png")，宿主会替换成它自己的取图前缀。
+   工作室左下角的「检查」会把上面每一条都验一遍。
+   ———————————————————————————————————————————————————————————— */
+
+:root {
+  --color-bg: #f6f7fb;
+  --color-text: #1a1d29;
+  --color-accent: #4c6ef5;
+
+  --color-surface: rgba(255, 255, 255, .8);
+  --color-surface-raised: rgba(255, 255, 255, .92);
+  --color-line: rgba(26, 29, 41, .12);
+}
+
+html[data-color-scheme="dark"], :root[data-theme="dark"] {
+  --color-bg: #10131c;
+  --color-text: #e8ecf5;
+  --color-accent: #7f9bff;
+
+  --color-surface: rgba(24, 29, 44, .78);
+  --color-surface-raised: rgba(32, 38, 56, .9);
+  --color-line: rgba(232, 236, 245, .14);
+}
+
+#app, #root {
+  background-color: var(--color-bg);
+  background-image: linear-gradient(160deg, #eef1ff 0%, #f8f9ff 60%, #ffffff 100%);
+  background-size: cover;
+  background-position: center;
+}
+
+html[data-color-scheme="dark"] #app, :root[data-theme="dark"] #app,
+html[data-color-scheme="dark"] #root, :root[data-theme="dark"] #root {
+  background-image: linear-gradient(160deg, #0b0e17 0%, #151a2b 60%, #0f1320 100%);
+}

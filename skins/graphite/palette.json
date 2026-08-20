@@ -1,0 +1,12 @@
+{
+  "light": {
+    "bg": "#f4f4f5", "text": "#1c1c1f", "accent": "#5a5f68", "logo": "#3f434a",
+    "surface": "#ffffff", "line": "#3d4046",
+    "scene": "radial-gradient(120% 90% at 10% 5%, #ffffff 0%, rgba(255,255,255,0) 60%), linear-gradient(170deg, #eeeef0 0%, #f4f4f5 58%, #fafafb 100%)"
+  },
+  "dark": {
+    "bg": "#131417", "text": "#e6e7ea", "accent": "#a8aeb8", "logo": "#8a8f98",
+    "surface": "#1f2126", "line": "#9aa0aa",
+    "scene": "radial-gradient(120% 90% at 10% 5%, #1e2026 0%, rgba(30,32,38,0) 60%), linear-gradient(170deg, #17181c 0%, #131417 58%, #0e0f12 100%)"
+  }
+}
