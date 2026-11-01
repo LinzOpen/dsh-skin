@@ -19,7 +19,7 @@
     "css"
   ],
   "peerDependencies": {
-    "electron": ">=28"
+    "electron": "^45.1.0"
   },
   "dependencies": {
     "@linzopen/css-guard": "0.1.0"
