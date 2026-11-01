@@ -15,8 +15,8 @@
     "@linzopen/css-guard": "0.1.0"
   },
   "devDependencies": {
-    "electron": "43.4.1",
-    "electron-builder": "^26.0.12"
+    "electron": "45.1.0",
+    "electron-builder": "^26.18.0"
   },
   "author": {
     "name": "css-guard contributors"
